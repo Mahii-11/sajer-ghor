@@ -14,7 +14,7 @@ export default function TrendingCategories() {
                     key={cat.id}
                     id={`trending-cat-card-${cat.id}`}
                     onClick={() => setSelectedCategory(cat.name)}
-                    className="group relative rounded-3xl overflow-hidden aspect-square cursor-pointer shadow-md border border-white/40"
+                    className="group relative rounded-3xl overflow-hidden aspect-[3/4] cursor-pointer shadow-md border border-white/40"
                   >
                     {/* Background Category Image */}
                     <img 

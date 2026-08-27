@@ -1,59 +1,74 @@
 import React from 'react';
-import { Star } from 'lucide-react';
 
 export default function ReviewCard({ review }) {
-  const { id, name, avatar, rating, text, product } = review;
+  const { id, name, avatar, rating = 5, text, product } = review;
 
   return (
     <div 
       id={`review-card-${id}`}
-      className="relative glass rounded-3xl p-6 pt-12 text-center shadow-lg hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 mt-10 h-full flex flex-col justify-between border border-white/40"
+      className="relative bg-white rounded-[24px] border border-[#E899B0] p-5 pt-14 text-center mt-12 flex flex-col justify-between max-w-[340px] w-full mx-auto"
     >
-      {/* Overflowing Avatar */}
-      <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full border-4 border-white shadow-md bg-white/85 backdrop-blur-md overflow-hidden">
-        <img 
-          src={avatar} 
-          alt={name}
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover" 
-        />
+      {/* Top Floating Avatar */}
+      <div className="absolute -top-11 left-1/2 -translate-x-1/2 w-22 h-22 rounded-full border border-[#E899B0] bg-[#D9D9D9] overflow-hidden flex items-center justify-center">
+        {avatar ? (
+          <img 
+            src={avatar} 
+            alt={name}
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover" 
+          />
+        ) : (
+          <div className="w-full h-full bg-[#D9D9D9]" />
+        )}
       </div>
 
-      {/* Customer Name & Stars */}
       <div>
-        <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-1">
+        {/* Customer Name */}
+        <h3 className="text-sm font-extrabold text-[#222222] uppercase tracking-wide mb-1.5">
           {name}
-        </h4>
+        </h3>
         
         {/* Rating Stars */}
-        <div className="flex justify-center text-amber-400 gap-0.5 mb-3">
+        <div className="flex justify-center gap-1 mb-4">
           {[...Array(5)].map((_, i) => (
-            <Star 
-              key={i} 
-              className={`w-3.5 h-3.5 fill-current ${i < rating ? 'text-amber-400' : 'text-gray-200'}`} 
-            />
+            <svg
+              key={i}
+              className={`w-4 h-4 ${i < rating ? 'text-[#F59E0B]' : 'text-gray-300'}`}
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
           ))}
         </div>
 
-        {/* Testimonial Text */}
-        <p className="text-xs text-gray-600 leading-relaxed italic mb-4 line-clamp-4">
-          "{text}"
+        {/* Review Text */}
+        <p className="text-[13px] text-[#333333] leading-relaxed font-normal mb-5 px-1">
+          {text}
         </p>
       </div>
 
-      {/* Purchased Product Thumbnail */}
+      {/* Recommended Product Section */}
       {product && (
-        <div className="mt-4 pt-3 border-t border-white/30 flex items-center gap-3 bg-white/40 backdrop-blur-sm p-2 rounded-xl text-left">
-          <img 
-            src={product.image} 
-            alt={product.name}
-            referrerPolicy="no-referrer"
-            className="w-10 h-10 object-cover rounded-lg border border-pink-100 bg-white" 
-          />
-          <div className="overflow-hidden">
-            <span className="text-[9px] uppercase font-bold text-[#db2777] block">Purchased Item</span>
-            <span className="text-[11px] text-gray-800 font-semibold truncate block">{product.name}</span>
+        <div className="pt-3 border-t border-[#E5E7EB] flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <img 
+              src={product.image} 
+              alt={product.name}
+              referrerPolicy="no-referrer"
+              className="w-9 h-9 object-cover rounded bg-gray-100" 
+            />
+            <span className="text-[11px] text-[#444444] font-medium leading-tight text-left">
+              {product.shortName || `${name?.split(' ')[0]} Recommends This Product`}
+            </span>
           </div>
+          
+          <a 
+            href={product.link || "#"} 
+            className="text-[10px] font-bold text-[#E83E8C] whitespace-nowrap hover:underline tracking-tight"
+          >
+            SHOP NOW &gt;&gt;
+          </a>
         </div>
       )}
     </div>

@@ -1,11 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { X, Trash2, Plus, Minus, Search, CheckCircle, ArrowRight, UserCheck, ShieldCheck, ShoppingBag } from 'lucide-react';
-import Navbar from '../components/Navbar';
 import HeroBanner from '../components/HeroBanner';
 import SectionTitle from '../components/SectionTitle';
 import ProductCard from '../components/ProductCard';
 import ReviewCard from '../components/ReviewCard';
-import Footer from '../components/Footer';
 
 // Static Data Imports
 import { products } from '../data/products';
@@ -130,16 +128,27 @@ export default function Home() {
     }
   ];
 
-  
+  // Filtered Products computation
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const matchesCategory = selectedCategory
+        ? product.category?.toLowerCase() === selectedCategory.toLowerCase()
+        : true;
+      const matchesSearch = searchQuery
+        ? product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.category.toLowerCase().includes(searchQuery.toLowerCase())
+        : true;
+      return matchesCategory && matchesSearch;
+    });
+  }, [selectedCategory, searchQuery]);
 
   // Specific grids
   const bestDealProducts = useMemo(() => {
-    // 4 products with the highest discounts or "BOGO"/"15% OFF" badges
     return products.filter(p => p.badge === "BOGO" || p.badge === "15% OFF" || p.badge === "20% OFF" || p.id === 1).slice(0, 4);
   }, []);
 
   const topRankingProducts = useMemo(() => {
-    // Products with rating >= 4.8, sorted
     return [...products].sort((a, b) => b.rating - a.rating).slice(0, 8);
   }, []);
 
@@ -184,7 +193,6 @@ export default function Home() {
     e.preventDefault();
     if (!trackingNumber.trim()) return;
     
-    // Simulate a random tracking update
     const statusArray = [
       { status: "In Transit", description: "Your package is processed at Banani Hub.", location: "Dhaka, BD", date: "Today, 10:15 AM" },
       { status: "Shipped", description: "Cosmetics carefully sealed and handed over to courier.", location: "Dhaka HQ", date: "Yesterday, 3:45 PM" },
@@ -209,18 +217,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#fff1f2] text-gray-800 flex flex-col font-sans" id="home-page-container">
       
-      {/* 1. HEADER SECTION (STICKY NAVBAR) */}
-      <Navbar 
-        cartItemsCount={cart.reduce((acc, item) => acc + item.quantity, 0)}
-        onCartClick={() => setCartOpen(true)}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        onTrackOrderClick={() => setTrackOrderOpen(true)}
-        onLoginClick={() => setLoginOpen(true)}
-      />
-
       {/* 2. HERO BANNER SECTION (FULL WIDTH) */}
       {!selectedCategory && !searchQuery && (
         <section id="hero-banner-section" className="w-full -mb-16">
@@ -231,8 +227,6 @@ export default function Home() {
       {/* Main Layout Area */}
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-8">
         
-        
-       
         {/* Dynamic Search / Filtering Results Section (Shows when search or category is active) */}
         {(selectedCategory || searchQuery) ? (
           <section id="filtered-results-section" className="space-y-8">
@@ -288,7 +282,6 @@ export default function Home() {
             <section id="top-brands-exclusive-offers" className="space-y-8">
               <SectionTitle title="TOP BRANDS EXCLUSIVE OFFERS" subtitle="Authorized Global Partners" />
               
-              {/* 2 rows, 4 cards per row matching screenshot */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {brandOffers.map((item) => (
                   <div 
@@ -297,10 +290,8 @@ export default function Home() {
                     onClick={() => setSearchQuery(item.brand)}
                     className="relative glass rounded-3xl overflow-hidden border border-white/40 group cursor-pointer shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-48 bg-gradient-to-br"
                   >
-                    {/* Soft background gradient */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${item.color} z-0`}></div>
                     
-                    {/* Cover image right side */}
                     <div className="absolute right-0 bottom-0 w-1/2 h-full z-10 pointer-events-none opacity-90 group-hover:scale-105 transition-transform duration-500">
                       <img 
                         src={item.image} 
@@ -310,7 +301,6 @@ export default function Home() {
                       />
                     </div>
 
-                    {/* Content text */}
                     <div className="relative z-20 p-5 flex flex-col h-full justify-between items-start max-w-[60%]">
                       <div className="space-y-1">
                         <span className={`${item.pillColor} text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider`}>
@@ -349,10 +339,8 @@ export default function Home() {
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
-                  {/* Rose dark overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-pink-950/90 via-transparent to-black/20"></div>
                   
-                  {/* Text Corner Label */}
                   <div className="absolute bottom-6 left-6 text-white text-left">
                     <span className="bg-[#db2777] text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest mb-2 block w-max">
                       Elegance Collection
@@ -374,10 +362,8 @@ export default function Home() {
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
-                  {/* Charcoal/blue dark overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-transparent to-black/20"></div>
                   
-                  {/* Text Corner Label */}
                   <div className="absolute bottom-6 left-6 text-white text-left">
                     <span className="bg-amber-600 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest mb-2 block w-max">
                       Active Grooming
@@ -409,7 +395,6 @@ export default function Home() {
             <section id="recommended-products" className="space-y-8">
               <SectionTitle title="RECOMMENDED PRODUCTS" subtitle="Dermatologically Curated" />
               
-              {/* 2-Column Showcase */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Skin Routine Guide left */}
                 <div className="glass border border-white/40 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-center shadow-md">
@@ -514,7 +499,6 @@ export default function Home() {
             <section id="trending-categories" className="space-y-8">
               <SectionTitle title="TRENDING CATEGORIES" subtitle="Shop By Aesthetic" />
               
-              {/* 4 columns, 2 rows matching screenshot */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {categories.map((cat) => (
                   <div 
@@ -523,7 +507,6 @@ export default function Home() {
                     onClick={() => setSelectedCategory(cat.name)}
                     className="group relative rounded-3xl overflow-hidden aspect-square cursor-pointer shadow-md border border-white/40"
                   >
-                    {/* Background Category Image */}
                     <img 
                       src={cat.image} 
                       alt={cat.name}
@@ -531,10 +514,8 @@ export default function Home() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                     />
                     
-                    {/* Dark gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent z-10 transition-opacity duration-300"></div>
 
-                    {/* Category Details at the bottom */}
                     <div className="absolute bottom-4 left-4 right-4 z-20 text-left">
                       <h3 className="text-white text-base font-black uppercase tracking-tight leading-tight group-hover:text-pink-300 transition-colors">
                         {cat.name}
@@ -563,15 +544,11 @@ export default function Home() {
 
       </main>
 
-      {/* 11. FOOTER */}
-      <Footer />
-
       {/* ================================================= */}
       {/* INTERACTIVE COMPONENT: SHOPPING CART DRAWERS */}
       {/* ================================================= */}
       {cartOpen && (
         <div className="fixed inset-0 z-50 overflow-hidden" id="cart-drawer-overlay">
-          {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
             onClick={() => setCartOpen(false)}
@@ -687,13 +664,10 @@ export default function Home() {
                       setCartOpen(false);
                       setOrderConfirmed(true);
                     }}
-                    className="w-full bg-[#db2777] hover:bg-[#be185d] text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition duration-300 shadow-md shadow-pink-100/50"
+                    className="w-full bg-[#db2777] hover:bg-[#be185d] text-white font-bold text-xs py-3.5 rounded-2xl transition duration-300 shadow-lg shadow-pink-500/20 flex items-center justify-center gap-2"
                   >
-                    Place Cash on Delivery Order
+                    Proceed to Checkout <ArrowRight className="w-4 h-4" />
                   </button>
-                  <p className="text-[10px] text-gray-400 text-center leading-relaxed">
-                    By checking out you acknowledge that we guarantee 100% genuine products sourced directly from official global partners.
-                  </p>
                 </div>
               )}
             </div>
@@ -702,178 +676,130 @@ export default function Home() {
       )}
 
       {/* ================================================= */}
-      {/* INTERACTIVE COMPONENT: TRACK ORDER MODAL */}
+      {/* INTERACTIVE COMPONENT: ORDER CONFIRMATION MODAL   */}
       {/* ================================================= */}
-      {trackOrderOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs" id="track-order-modal">
-          <div className="bg-white/85 backdrop-blur-xl rounded-3xl border border-white/40 w-full max-w-md overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-300">
-            {/* Header */}
-            <div className="p-5 bg-white/45 backdrop-blur-md border-b border-pink-100/40 flex justify-between items-center">
-              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                <Truck className="w-5 h-5 text-[#db2777]" />
-                Track Your Shipment
-              </h3>
-              <button 
-                onClick={() => { setTrackOrderOpen(false); setTrackingResult(null); setTrackingNumber(""); }}
-                className="p-1 rounded-full hover:bg-gray-200 text-gray-500 hover:text-black transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
+      {orderConfirmed && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center space-y-4 shadow-2xl border border-pink-100 relative">
+            <button 
+              onClick={() => setOrderConfirmed(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-black p-1 rounded-full"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle className="w-10 h-10" />
             </div>
-
-            {/* Body */}
-            <div className="p-6 space-y-6">
-              <p className="text-xs text-gray-600 leading-relaxed">
-                Enter your Shajerghor invoice or tracking code (e.g. SG-1025) to check the real-time shipping status.
-              </p>
-
-              <form onSubmit={handleTrackOrder} className="relative">
-                <input
-                  id="tracking-input-field"
-                  type="text"
-                  placeholder="Enter Tracking Number..."
-                  value={trackingNumber}
-                  onChange={(e) => setTrackingNumber(e.target.value)}
-                  className="w-full pl-4 pr-12 py-3 rounded-full border border-pink-200 bg-white/50 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm font-semibold uppercase"
-                  required
-                />
-                <button 
-                  type="submit"
-                  className="absolute right-1.5 top-1.5 bg-[#db2777] hover:bg-black text-white p-2 rounded-full transition duration-300"
-                >
-                  <Search className="w-4 h-4" />
-                </button>
-              </form>
-
-              {/* tracking results display */}
-              {trackingResult && (
-                <div className="p-4 glass-pink rounded-2xl text-left space-y-3 animate-in slide-in-from-bottom-2 duration-300">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] uppercase font-extrabold text-gray-400">Order Ref: {trackingResult.id}</span>
-                    <span className="bg-[#db2777] text-white text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                      {trackingResult.status}
-                    </span>
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-gray-800 leading-snug">{trackingResult.description}</h4>
-                    <span className="text-[10px] text-gray-500 block mt-1">Location: {trackingResult.location}</span>
-                    <span className="text-[10px] text-gray-500 block">Updated: {trackingResult.date}</span>
-                  </div>
-                  <div className="border-t border-pink-200 pt-2 flex items-center gap-1.5 text-[10px] text-gray-600">
-                    <CheckCircle className="w-4 h-4 text-[#db2777]" />
-                    <span>Temperature-controlled courier storage confirmed</span>
-                  </div>
-                </div>
-              )}
-            </div>
+            <h3 className="text-xl font-black text-gray-900">Order Placed Successfully!</h3>
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Thank you for shopping with us. Your invoice total of <span className="font-bold text-gray-900">৳{confirmedAmount.toLocaleString()} BDT</span> has been processed. Track your order with ID: <span className="font-mono font-bold text-[#db2777]">SG-{Math.floor(100000 + Math.random() * 900000)}</span>.
+            </p>
+            <button
+              onClick={() => setOrderConfirmed(false)}
+              className="w-full bg-black text-white text-xs font-bold py-3 rounded-xl hover:bg-gray-800 transition"
+            >
+              Back to Home
+            </button>
           </div>
         </div>
       )}
 
       {/* ================================================= */}
-      {/* INTERACTIVE COMPONENT: LOGIN MODAL */}
+      {/* INTERACTIVE COMPONENT: LOGIN MODAL                */}
       {/* ================================================= */}
       {loginOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs" id="login-modal">
-          <div className="bg-white/85 backdrop-blur-xl rounded-3xl border border-white/40 w-full max-w-sm overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-300">
-            {/* Header */}
-            <div className="p-5 bg-white/45 backdrop-blur-md border-b border-pink-100/40 flex justify-between items-center">
-              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-[#db2777]" />
-                Secure User Login
-              </h3>
-              <button 
-                onClick={() => setLoginOpen(false)}
-                className="p-1 rounded-full hover:bg-gray-200 text-gray-500 hover:text-black transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full space-y-5 shadow-2xl border border-pink-100 relative">
+            <button 
+              onClick={() => setLoginOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-black p-1 rounded-full"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="text-center space-y-1">
+              <h3 className="text-xl font-black text-gray-900">Sign In</h3>
+              <p className="text-xs text-gray-500">Access exclusive member rewards & track orders</p>
             </div>
-
-            {/* Body */}
-            <form onSubmit={handleLoginSubmit} className="p-6 space-y-4 text-left">
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-gray-500">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="Enter your email..."
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">Email Address</label>
+                <input 
+                  type="email" 
+                  required
+                  placeholder="name@example.com"
                   value={loginForm.email}
                   onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-pink-200 bg-white/50 focus:outline-none focus:ring-2 focus:ring-pink-300 text-xs font-semibold"
-                  required
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#db2777]"
                 />
               </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-gray-500">Secret Password</label>
-                <input
-                  type="password"
-                  placeholder="Enter your password..."
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">Password</label>
+                <input 
+                  type="password" 
+                  required
+                  placeholder="••••••••"
                   value={loginForm.password}
                   onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-pink-200 bg-white/50 focus:outline-none focus:ring-2 focus:ring-pink-300 text-xs font-semibold"
-                  required
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-[#db2777]"
                 />
               </div>
-
               <button
                 type="submit"
-                className="w-full bg-[#db2777] hover:bg-[#be185d] text-white text-xs font-bold py-3 rounded-xl transition duration-300 uppercase tracking-wider shadow-md shadow-pink-100/50"
+                className="w-full bg-[#db2777] text-white text-xs font-bold py-3 rounded-xl hover:bg-[#be185d] transition shadow-md shadow-pink-500/20"
               >
-                Sign In To Shajerghor
+                Log In
               </button>
-
-              <div className="text-center pt-2">
-                <span className="text-[10px] text-gray-400">
-                  Don't have an account? <a href="#" className="text-[#db2777] font-bold hover:underline">Sign up now</a>
-                </span>
-              </div>
             </form>
           </div>
         </div>
       )}
 
       {/* ================================================= */}
-      {/* PREMIUM INTERACTIVE COMPONENT: ORDER SUCCESS TOAST */}
+      {/* INTERACTIVE COMPONENT: TRACK ORDER MODAL          */}
       {/* ================================================= */}
-      {orderConfirmed && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs" id="order-success-modal">
-          <div className="bg-white/90 backdrop-blur-xl rounded-3xl border border-emerald-200 w-full max-w-sm p-6 text-center shadow-2xl relative animate-in zoom-in duration-300 space-y-4">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
-              ✓
-            </div>
-            <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight">Order Placed Successfully!</h3>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              Thank you for choosing <span className="font-extrabold text-[#db2777]">SHAJERGHOR</span>! Your Cash on Delivery order of <span className="font-black text-gray-900">৳{confirmedAmount.toLocaleString()} BDT</span> has been registered.
-            </p>
-            <div className="bg-emerald-50/50 rounded-xl p-3 border border-emerald-100 text-left text-[11px] text-emerald-800 space-y-1">
-              <p className="font-bold">Estimated Delivery: 24-48 Hours</p>
-              <p>Your package will be handled in temperature-controlled boxes to maintain product viability.</p>
-            </div>
+      {trackOrderOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl border border-pink-100 relative">
             <button 
-              onClick={() => setOrderConfirmed(false)}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-xl uppercase tracking-wider transition-all shadow-md shadow-emerald-100"
+              onClick={() => { setTrackOrderOpen(false); setTrackingResult(null); setTrackingNumber(""); }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-black p-1 rounded-full"
             >
-              Continue Shopping
+              <X className="w-5 h-5" />
             </button>
-          </div>
-        </div>
-      )}
+            <div className="text-center space-y-1">
+              <h3 className="text-xl font-black text-gray-900">Track Order</h3>
+              <p className="text-xs text-gray-500">Enter your order ID (e.g., SG-948201)</p>
+            </div>
+            <form onSubmit={handleTrackOrder} className="flex gap-2">
+              <input 
+                type="text" 
+                required
+                placeholder="Order ID..."
+                value={trackingNumber}
+                onChange={(e) => setTrackingNumber(e.target.value)}
+                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-[#db2777]"
+              />
+              <button
+                type="submit"
+                className="bg-black text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-gray-800 transition"
+              >
+                Track
+              </button>
+            </form>
 
-      {/* Simulated User logged-in floating notice */}
-      {userLoggedIn && (
-        <div className="fixed bottom-6 left-6 z-40 bg-black text-white px-4 py-3 rounded-2xl flex items-center gap-3 shadow-2xl border border-pink-400/20 animate-bounce">
-          <UserCheck className="w-5 h-5 text-green-400" />
-          <div className="text-left">
-            <span className="text-[9px] uppercase font-bold text-gray-400 block leading-none">Welcome back</span>
-            <span className="text-xs font-extrabold text-pink-300 block">{userLoggedIn}</span>
+            {trackingResult && (
+              <div className="bg-pink-50/60 border border-pink-100 rounded-2xl p-4 text-left space-y-2 animate-fadeIn">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-black uppercase text-[#db2777] bg-white px-2 py-0.5 rounded border border-pink-200">
+                    {trackingResult.status}
+                  </span>
+                  <span className="text-[10px] text-gray-400">{trackingResult.date}</span>
+                </div>
+                <p className="text-xs font-bold text-gray-800">{trackingResult.description}</p>
+                <span className="text-[10px] text-gray-500 block">Current Hub: {trackingResult.location}</span>
+              </div>
+            )}
           </div>
-          <button 
-            onClick={() => setUserLoggedIn(null)}
-            className="hover:text-[#db2777] font-black text-sm ml-2"
-          >
-            ×
-          </button>
         </div>
       )}
 

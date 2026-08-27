@@ -1,19 +1,16 @@
 import ForHerHim from "../components/ForHerHim";
 import Founders from "../components/Founders";
 import HeroBanner from "../components/HeroBanner";
-import Navbar from "../components/Navbar";
 import RecommendedProducts from "../components/RecommendedProducts";
-import TestimonialSection from "../components/TestimonialSection";
 import TopRankProduct from "../components/TopRankProduct";
 import TrendingCategories from "../components/TrendingCategories";
-import Footer from '../components/Footer';
 import DealsSection from "../components/DealsSection";
 import TopBrandsSection from "../components/TopBrandsSection";
+import BeautyLoversSection from "../components/BeautyLoversSection";
 
 export default function HomePage() {
   return (
       <div>
-      <Navbar />
        <section id="hero-banner-section" className="w-full -mb-16">
          <HeroBanner />
       </section>
@@ -24,12 +21,8 @@ export default function HomePage() {
         <ForHerHim />
         <TopRankProduct />
         <RecommendedProducts />
-        <Founders />
         <TrendingCategories />
-        <TestimonialSection />
-         <Footer />
-        
-
+        <BeautyLoversSection />
       </main>
       
     </div>

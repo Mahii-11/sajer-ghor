@@ -107,33 +107,6 @@ export const topRankingProducts = [
     image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?q=80&w=500&auto=format&fit=crop",
     category: "Makeup"
   },
-  {
-    id: 18,
-    name: "Ceramide Moisture Skin Barrier Cream",
-    brand: "La Roche-Posay",
-    price: 2800,
-    oldPrice: 3200,
-    rating: 4.8,
-    reviews: 195,
-    badge: "Barrier Repair",
-    image: "/products/product-2.jpg",
-    category: "Skin"
-  },
- 
-  {
-    id: 20,
-    name: "Blue Oud Men Luxury Perfume Spray",
-    brand: "Versace",
-    price: 8900,
-    oldPrice: 10500,
-    rating: 4.9,
-    reviews: 64,
-    badge: "New Launch",
-    image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=500&auto=format&fit=crop",
-    category: "Fragrance"
-  },
- 
-  
  
 ];
 

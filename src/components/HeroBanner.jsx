@@ -1,29 +1,41 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { getSliders } from '../services/api';
 
-const banners = [
-  {
-    id: 1,
-    image: "/images/heroImage-3.jpg",
-  },
-  {
-    id: 2,
-    image: "/images/heroImage-2.jpg",
-  },
-  {
-    id: 3,
-    image: "/images/heroImage-1.jpg",
-  },
-];
 
 export default function HeroBanner() {
+  const [slider, setSlider] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+
+    const loadSlider = async () => {
+      try {
+        setLoading(true);
+        const data = await getSliders();
+        console.log("banner data", data)
+        setSlider(data);
+      } catch (error) {
+        console.error("Error fetching Hero Slider data", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadSlider();
+
+  }, [])
+
+
+
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideInterval = useRef(null);
 
   const startSlideTimer = () => {
     stopSlideTimer();
     slideInterval.current = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % banners.length);
+      setCurrentSlide((prev) => (prev + 1) % slider.length);
     }, 5000);
   };
 
@@ -39,12 +51,12 @@ export default function HeroBanner() {
   }, []);
 
   const handleNext = () => {
-    setCurrentSlide((prev) => (prev + 1) % banners.length);
+    setCurrentSlide((prev) => (prev + 1) % slider.length);
     startSlideTimer();
   };
 
   const handlePrev = () => {
-    setCurrentSlide((prev) => (prev - 1 + banners.length) % banners.length);
+    setCurrentSlide((prev) => (prev - 1 + slider.length) % slider.length);
     startSlideTimer();
   };
 
@@ -63,13 +75,13 @@ export default function HeroBanner() {
         className="flex h-full w-full transition-transform duration-700 ease-out"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {banners.map((banner) => (
+        {slider.map((banner) => (
           <div
             key={banner.id}
             className="relative h-full w-full shrink-0 overflow-hidden"
           >
             <img
-              src={banner.image}
+              src={banner.slider}
               alt={`Banner ${banner.id}`}
               className="w-full h-full object-cover object-center"
             />
@@ -98,7 +110,7 @@ export default function HeroBanner() {
 
       {/* Dots Indicator */}
       <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 bg-black/10 backdrop-blur-xs px-3 py-1.5 rounded-full">
-        {banners.map((_, index) => (
+        {slider.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
