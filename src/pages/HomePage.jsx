@@ -7,6 +7,7 @@ import TrendingCategories from "../components/TrendingCategories";
 import DealsSection from "../components/DealsSection";
 import TopBrandsSection from "../components/TopBrandsSection";
 import BeautyLoversSection from "../components/BeautyLoversSection";
+import TopBrands from "../components/TopBrands";
 
 export default function HomePage() {
   return (
@@ -21,6 +22,7 @@ export default function HomePage() {
         <ForHerHim />
         <TopRankProduct />
         <RecommendedProducts />
+        <TopBrands />
         <TrendingCategories />
         <BeautyLoversSection />
       </main>
