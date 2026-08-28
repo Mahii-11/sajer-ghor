@@ -1,5 +1,6 @@
 import React from 'react';
 import { Star, ShoppingCart } from 'lucide-react';
+import { FaBagShopping, FaCartPlus } from 'react-icons/fa6';
 
 export default function ProductCard({ product, onAddToCart }) {
   const { id, image, name, brand, price, oldPrice, rating, reviews, badge } = product;
@@ -10,81 +11,62 @@ export default function ProductCard({ product, onAddToCart }) {
   return (
     <div 
       id={`product-card-${id}`}
-      className="glass rounded-2xl border border-white/40 hover:border-[#db2777]/30 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group h-full"
+      className="relative bg-white border border-gray-200 rounded-[22px] overflow-hidden flex flex-col justify-between w-full shadow-sm hover:shadow-md transition-shadow"
     >
-      {/* Product Image and Badge */}
-      <div className="relative aspect-square overflow-hidden bg-pink-50/30 flex items-center justify-center p-4">
-        <img 
-          src={image} 
-          alt={name}
-          referrerPolicy="no-referrer"
-          className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500"
-        />
-        
-        {/* Promotional Badge */}
-        {badge && (
-          <span className="absolute top-3 left-3 bg-[#db2777] text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm z-10">
-            {badge}
-          </span>
-        )}
+         <div className="relative w-full h-64 overflow-hidden">
+        <div className="absolute top-3 left-3 bg-[#FCF8F8] text-gray-950 text-[9px] sm:text-[10px] font-bold uppercase px-2.5 py-1 rounded-r-md rounded-l-sm z-10 shadow-sm">
+          {product.brand}
+        </div>
 
-        {/* Instant discount tag if old price exists */}
-        {discount > 0 && (
-          <span className="absolute top-3 right-3 bg-emerald-600 text-white text-[9px] font-bold px-2.5 py-1 rounded-full shadow-sm z-10">
-            -{discount}%
-          </span>
-        )}
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-full object-cover block hover:scale-105 transition-transform duration-300"
+        />
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col flex-grow">
-        {/* Brand */}
-        <span className="text-[9px] uppercase tracking-widest text-gray-400 font-semibold mb-1">
-          {brand}
-        </span>
-        
-        {/* Title */}
-        <h3 className="text-xs font-semibold text-gray-800 line-clamp-2 hover:text-[#db2777] transition-colors duration-200 mb-2 h-10 overflow-hidden leading-tight">
-          {name}
-        </h3>
+      <div className="p-3.5 flex flex-col flex-grow justify-between">
+        <div>
+          <h3 className="text-gray-900 text-xs font-semibold line-clamp-1 mb-2">
+            {product.name}
+          </h3>
 
-        {/* Rating and Reviews */}
-        <div className="flex items-center gap-1 mb-3">
-          <div className="flex text-amber-400">
-            {[...Array(5)].map((_, i) => (
-              <Star 
-                key={i} 
-                className={`w-3 h-3 fill-current ${i < Math.floor(rating) ? 'text-amber-400' : 'text-gray-200'}`} 
-              />
-            ))}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-black font-extrabold text-base sm:text-lg">
+              ৳{product.price}
+            </span>
+            <span className="text-[#E61C5C] line-through text-xs font-semibold">
+              ৳{product.oldPrice}
+            </span>
           </div>
-          <span className="text-[10px] text-gray-500 font-medium">({reviews})</span>
         </div>
 
-        {/* Pricing and Action */}
-        <div className="mt-auto pt-3 border-t border-pink-100/30 flex items-center justify-between gap-2">
-          <div className="flex flex-col">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-sm font-black text-gray-900">৳{price.toLocaleString()}</span>
-              {oldPrice && (
-                <span className="text-[10px] text-gray-400 line-through">৳{oldPrice.toLocaleString()}</span>
-              )}
-            </div>
-          </div>
-
-          <button
-            id={`btn-add-to-cart-${id}`}
-            onClick={(e) => {
-              e.preventDefault();
-              if (onAddToCart) onAddToCart(product);
-            }}
-            className="bg-[#db2777] hover:bg-[#be185d] text-white p-2 rounded-full transition-all duration-300 group-hover:scale-105 active:scale-95 flex items-center justify-center shadow-md shadow-pink-100/50"
-            title="Add to Cart"
+        {/* Action Buttons Section */}
+        <div className="grid grid-cols-2 gap-1.5 w-full pt-1">
+          {/* Buy Now Button */}
+          <button 
+            title="Buy Now"
+            className="bg-[#E61C5C] hover:bg-pink-600 text-white font-medium py-2 px-1 rounded-xl flex items-center justify-center gap-1 transition-colors leading-tight cursor-pointer"
           >
-            <ShoppingCart className="w-3.5 h-3.5" />
+            <FaBagShopping className="text-sm shrink-0" />
+            <span className="hidden md:inline text-[10px] xl:text-[11px] whitespace-nowrap">
+              Buy Now
+            </span>
+          </button>
+
+          {/* Add to Cart Button border-[#4C127D] text-[#4C127D] */}
+          <button 
+            title="Add to Cart"
+            className="bg-white border border-[#E61C5C] text-[#E61C5C] hover:bg-purple-50 font-medium py-2 px-1 rounded-xl flex items-center justify-center gap-1 transition-colors leading-tight"
+          >
+            <FaCartPlus className="text-sm shrink-0" />
+            <span className="hidden md:inline text-[10px] xl:text-[11px] whitespace-nowrap">
+              Add to Cart
+            </span>
           </button>
         </div>
-      </div>
+        </div>
     </div>
   );
 }

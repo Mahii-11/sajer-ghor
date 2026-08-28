@@ -107,6 +107,30 @@ export const topRankingProducts = [
     image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?q=80&w=500&auto=format&fit=crop",
     category: "Makeup"
   },
+    {
+    id: 4,
+    name: "Eclat De Rose Luxury Perfume",
+    brand: "Versace",
+    price: 7800,
+    oldPrice: 8500,
+    rating: 4.9,
+    reviews: 74,
+    badge: "Exclusive",
+    image: "https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=500&auto=format&fit=crop",
+    category: "Fragrance"
+  },
+  {
+    id: 5,
+    name: "Ultra Gentle Baby Head-to-Toe Wash",
+    brand: "Cetaphil Baby",
+    price: 950,
+    oldPrice: 1100,
+    rating: 4.9,
+    reviews: 188,
+    badge: "Mom's Choice",
+    image: "https://images.unsplash.com/photo-1515688594390-b649af70d282?q=80&w=500&auto=format&fit=crop",
+    category: "Mom & Baby"
+  },
  
 ];
 
@@ -114,10 +138,10 @@ export const topRankingProducts = [
 export default function TopRankProduct() {
   return (
     <div>
-          <section id="top-ranking-products" className="glass-pink rounded-3xl p-6 sm:p-10 space-y-8 border border-pink-200/40 shadow-sm">
+          <section id="top-ranking-products">
               <SectionTitle title="TOP RANKING PRODUCTS" subtitle="Loved By Thousands" />
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
                 {topRankingProducts.map((product) => (
                   <ProductCard 
                     key={product.id} 
