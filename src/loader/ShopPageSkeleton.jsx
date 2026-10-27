@@ -36,7 +36,7 @@ export default function ShopPageSkeleton() {
           </div>
 
           {/* Product Cards Grid Skeleton */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3">
             {[...Array(8)].map((_, index) => (
               <ProductCardSkeleton key={index} />
             ))}

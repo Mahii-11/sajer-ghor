@@ -20,7 +20,7 @@ export const formatSectionProduct = (item) => ({
   offer_price: item.offer_price,
 });
 
-const getPerView = (width) => (width >= 1024 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2);
+const getPerView = (width) => (width >= 768 ? 4 : width >= 640 ? 3 : 2);
 
 export function SliderHeader({ title, viewAllTo, className = '' }) {
   return (

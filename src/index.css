@@ -52,6 +52,30 @@
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Slim pink scrollbar for scrollable lists (e.g. shop sidebar) */
+.modern-scrollbar {
+  scrollbar-width: thin;                                   /* Firefox */
+  scrollbar-color: #f9a8d4 transparent;
+}
+.modern-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.modern-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+.modern-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f9a8d4, #db2777);
+  border-radius: 9999px;
+}
+.modern-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #be185d;
+}
+/* Hide the up/down arrow buttons Windows adds by default */
+.modern-scrollbar::-webkit-scrollbar-button {
+  display: none;
+}
+
 body {
   background-color: #FAFAFA;
 }

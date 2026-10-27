@@ -145,6 +145,8 @@ export const getShowcaseData = async () =>
 
 /**
  * 🛒 Shop Products API (Supports Query Parameters for Filtering & Pagination)
+ * Params: page, search, sort, min_price, max_price,
+ *         category_id[], sub_category_id[], brand_id[] (arrays are sent as key[]=value)
  */
 export const getShopProducts = async (params = {}) => {
   try {
@@ -161,15 +163,14 @@ export const getShopProducts = async (params = {}) => {
     });
 
     const queryString = queryParams.toString();
-    const endpoint = queryString ? `shop?${queryString}` : "shop";
+    const endpoint = queryString ? `shop-products?${queryString}` : "shop-products";
 
+    // Response: { status, data: [products], meta: { current_page, last_page, per_page, total } }
     const response = await fetchData(endpoint);
-    const rawData = response?.data ?? response;
 
     return {
-      products: rawData?.products?.data || rawData?.products || [],
-      filters: rawData?.filters || {},
-      pagination: rawData?.pagination || rawData?.products || {},
+      products: Array.isArray(response?.data) ? response.data : [],
+      pagination: response?.meta || {},
     };
   } catch (error) {
     console.error("Error fetching shop products:", error);

@@ -111,45 +111,76 @@ function CountPill({ active, children }) {
   );
 }
 
-function CategoryRow({ item, depth, active, onSelect }) {
-  // Matched by item object or string item reference
+// Matched by item object or string item reference
+const isCategoryActive = (item, active) => {
   const catName = typeof item === "string" ? item : item.name;
-  const isActive =
+  return (
     active === catName ||
     (typeof active === "object" && active?.id === item.id) ||
-    active === item.slug;
+    active === item.slug
+  );
+};
+
+function CategoryRow({ item, depth, active, onSelect }) {
+  const catName = typeof item === "string" ? item : item.name;
+  const isActive = isCategoryActive(item, active);
+  const hasChildren = Array.isArray(item.children) && item.children.length > 0;
+  const hasActiveChild = hasChildren && item.children.some((c) => isCategoryActive(c, active));
+
+  // Sub categories live in a dropdown; open it by hand or when one of them is selected
+  const [open, setOpen] = useState(false);
+  const isOpen = open || hasActiveChild;
 
   return (
     <div>
-      <button
-        onClick={() => onSelect(item)}
-        className={`flex w-full items-center justify-between py-2 text-left transition-colors ${
-          depth > 0 ? "pl-4 text-[13px]" : "text-[14px]"
-        } ${
-          isActive
-            ? "font-semibold text-pink-600"
-            : "text-gray-700 hover:text-pink-600"
-        }`}
-      >
-        <span className="flex items-center gap-1.5">
-          {catName}
-          {item.icon && (
-            <Zap size={13} className="fill-amber-400 text-amber-400" />
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => onSelect(item)}
+          className={`flex flex-1 items-center justify-between py-2 text-left transition-colors ${
+            depth > 0 ? "pl-4 text-[13px]" : "text-[14px]"
+          } ${
+            isActive
+              ? "font-semibold text-pink-600"
+              : "text-gray-700 hover:text-pink-600"
+          }`}
+        >
+          <span className="flex items-center gap-1.5">
+            {catName}
+            {item.icon && (
+              <Zap size={13} className="fill-amber-400 text-amber-400" />
+            )}
+          </span>
+          {item.count !== undefined && (
+            <CountPill active={isActive}>{item.count}</CountPill>
           )}
-        </span>
-        {item.count !== undefined && (
-          <CountPill active={isActive}>{item.count}</CountPill>
+        </button>
+        {hasChildren && (
+          <button
+            onClick={() => setOpen((o) => !o)}
+            aria-label={isOpen ? `Hide ${catName} sub categories` : `Show ${catName} sub categories`}
+            aria-expanded={isOpen}
+            className="ml-1 rounded p-1.5 text-gray-400 hover:text-pink-600"
+          >
+            <ChevronDown
+              size={16}
+              className={`transition-transform duration-200 ${isOpen ? "rotate-180 text-pink-600" : ""}`}
+            />
+          </button>
         )}
-      </button>
-      {item.children?.map((child) => (
-        <CategoryRow
-          key={child.id || child.name}
-          item={child}
-          depth={depth + 1}
-          active={active}
-          onSelect={onSelect}
-        />
-      ))}
+      </div>
+      {hasChildren && isOpen && (
+        <div className="mb-1 ml-1 border-l-2 border-pink-100">
+          {item.children.map((child) => (
+            <CategoryRow
+              key={child.id || child.name}
+              item={child}
+              depth={depth + 1}
+              active={active}
+              onSelect={onSelect}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -190,7 +221,7 @@ function Sidebar({
           <h3 className="mb-2 border-b border-gray-100 pb-2 text-base font-semibold text-gray-900">
             Categories
           </h3>
-          <div className="divide-y divide-gray-50 max-h-80 overflow-y-auto pr-1">
+          <div className="modern-scrollbar divide-y divide-gray-50 max-h-80 overflow-y-auto pr-2">
             {categories.map((cat) => (
               <CategoryRow
                 key={cat.id || cat.slug || cat.name}
@@ -210,7 +241,7 @@ function Sidebar({
           <h3 className="mb-3 border-b border-gray-100 pb-2 text-base font-semibold text-gray-900">
             Filter by Brand
           </h3>
-          <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+          <div className="modern-scrollbar flex flex-col gap-2 max-h-60 overflow-y-auto pr-2">
             {visibleBrands.map((brand) => {
               const brandName = typeof brand === "string" ? brand : brand.name;
               return (
@@ -645,7 +676,7 @@ export default function ShopPage({
             </div>
           ) : (
             <div
-              className={`grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4 transition-opacity ${
+              className={`grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 transition-opacity ${
                 fetching ? "opacity-50 pointer-events-none" : ""
               }`}
             >
