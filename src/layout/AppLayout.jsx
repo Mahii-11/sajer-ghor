@@ -1,6 +1,9 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from './Footer';
+import CartDrawer from "../components/CartDrawer";
+import FloatingCartButton from "../components/FloatingCartButton";
+import CartToast from "../components/CartToast";
 
 
 export default function AppLayout() {
@@ -12,7 +15,10 @@ export default function AppLayout() {
       <main className="pb-20 lg:pb-0">
         <Outlet  /> 
       </main>
-      <Footer/>
+      <Footer />
+      <CartDrawer />
+      <FloatingCartButton />
+      <CartToast />
     </div>
   )
 }

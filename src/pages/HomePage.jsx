@@ -12,14 +12,16 @@ import TopBrands from "../components/TopBrands";
 export default function HomePage() {
   return (
       <div>
-       <section id="hero-banner-section" className="w-full -mb-16">
+       <section id="hero-banner-section" className="w-full">
          <HeroBanner />
       </section>
-      <main className="grow max-w-350 mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-8">
+      <main className="grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-10 md:space-y-12">
 
         <DealsSection />
         <TopBrandsSection/>
-        <ForHerHim />
+        <div>
+          <ForHerHim />
+        </div>
         <TopRankProduct />
         <RecommendedProducts />
         <TopBrands />

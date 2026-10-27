@@ -52,7 +52,7 @@ export default function Founders() {
                     <span className="text-xs font-semibold text-brand-pink uppercase tracking-wider block mt-1 mb-3">
                       {founder.role}
                     </span>
-                    <p className="text-xs text-gray-600 leading-relaxed italic max-w-xs">
+                    <p className="text-sm text-gray-600 leading-relaxed italic max-w-xs">
                       "{founder.bio}"
                     </p>
                   </div>
