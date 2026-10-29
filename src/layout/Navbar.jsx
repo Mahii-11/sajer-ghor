@@ -300,7 +300,7 @@ export default function Navbar({
             <button
               id="btn-login"
               onClick={onLoginClick}
-              className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-pink-50 text-gray-900 hover:text-[#db2777] text-[13px] font-bold uppercase tracking-wide h-8 px-3 sm:px-4 rounded-full transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+              className="flex items-center justify-center gap-2 bg-gray-200 hover:bg-pink-50 text-gray-900 hover:text-[#db2777] text-[13px] font-bold uppercase tracking-wide h-8 px-3 sm:px-4 rounded-full transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer"
             >
               <User className="w-4 h-4 sm:hidden" />
               <span className="hidden sm:inline">Login</span>
@@ -344,7 +344,7 @@ export default function Navbar({
                       to={`/category/${cat.slug}`}
                       onClick={() => { setSelectedCategory(cat.slug); setHoveredCat(null); }}
                       onMouseEnter={() => setHoveredCat(hasSub ? cat : null)}
-                      className={`relative flex shrink-0 items-center gap-1 whitespace-nowrap text-[16px] font-medium tracking-wide px-2 py-2 transition-colors duration-200 after:absolute after:left-2 after:right-2 after:bottom-0 after:h-[3px] after:rounded-full after:bg-linear-to-r after:from-[#db2777] after:to-rose-400 after:origin-left after:transition-transform after:duration-300 ${
+                      className={`relative flex shrink-0 items-center gap-[5px] whitespace-nowrap text-[16px] font-medium tracking-wide px-2 py-2 transition-colors duration-200 after:absolute after:left-2 after:right-2 after:bottom-0 after:h-[3px] after:rounded-full after:bg-linear-to-r after:from-[#db2777] after:to-rose-400 after:origin-left after:transition-transform after:duration-300 ${
                         selectedCategory === cat.slug || isHovered
                           ? 'text-[#db2777] after:scale-x-100'
                           : 'text-gray-900 hover:text-[#db2777] after:scale-x-0 hover:after:scale-x-100'

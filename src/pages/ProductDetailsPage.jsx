@@ -699,19 +699,22 @@ const ProductDetailsPage = () => {
                 <button
                   key={item.title}
                   onClick={() => toggleAccordion(index)}
-                  className={`py-2 text-[13px] uppercase tracking-[0.18em] border-b transition-colors duration-200 ${
-                    isOpen
-                      ? 'border-pink-500 text-pink-600 font-semibold'
-                      : 'border-transparent text-gray-500 font-medium'
+                  className={`flex items-center gap-2 py-2 text-[13px] uppercase tracking-[0.18em] font-semibold transition-colors duration-200 ${
+                    isOpen ? 'text-gray-900' : 'text-pink-500'
                   }`}
                 >
                   {item.title}
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 shrink-0 transition-transform duration-300 ease-in-out ${
+                      isOpen ? 'rotate-180' : 'rotate-0'
+                    }`}
+                  />
                 </button>
               );
             })}
           </div>
           {openAccordions.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-gray-100 text-sm text-gray-600 leading-relaxed">
+            <div className="mt-6 pt-6 border-t border-gray-100 text-sm text-gray-600 leading-relaxed info-content">
               {openAccordions.map((index) => (
                 <div key={infoSections[index].title}>{infoSections[index].content}</div>
               ))}

@@ -119,7 +119,7 @@ export default function ProductCard({ product }) {
       )}
 
       {/* Responsive Image */}
-      <div className="relative w-full aspect-square sm:aspect-auto sm:h-64 overflow-hidden bg-gray-50">
+      <div className="relative w-full aspect-square overflow-hidden bg-gray-50">
         <img
           src={displayImage || '/placeholder.jpg'}
           alt={typeof name === 'string' ? name : 'Product Image'}
@@ -146,18 +146,18 @@ export default function ProductCard({ product }) {
           <div className="flex items-center justify-center gap-3">
             {isVariable && resolvedMinPrice != null ? (
               <span className="text-[#E61C5C] font-bold text-base sm:text-lg">
-                ৳{resolvedMinPrice} {resolvedMaxPrice && resolvedMaxPrice !== resolvedMinPrice ? `- ৳${resolvedMaxPrice}` : ''}
+                <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{resolvedMinPrice} {resolvedMaxPrice && resolvedMaxPrice !== resolvedMinPrice ? <>- <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{resolvedMaxPrice}</> : ''}
               </span>
             ) : (
               <>
+                <span className="text-[#E61C5C] font-bold text-base sm:text-lg tracking-widest">
+                  <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{displayPrice}
+                </span>
                 {oldPrice && (
-                  <span className="text-gray-400 line-through text-sm font-medium">
-                    ৳{oldPrice}
+                  <span className="text-gray-400 line-through text-sm font-medium tracking-wider">
+                    <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{oldPrice}
                   </span>
                 )}
-                <span className="text-[#E61C5C] font-bold text-base sm:text-lg">
-                  ৳{displayPrice}
-                </span>
               </>
             )}
           </div>

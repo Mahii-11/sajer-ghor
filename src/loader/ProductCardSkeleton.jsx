@@ -5,7 +5,7 @@ export default function ProductCardSkeleton() {
   return (
     <div className="relative bg-white border border-gray-200 rounded-2xl sm:rounded-[22px] overflow-hidden flex flex-col justify-between w-full shadow-sm animate-pulse">
       {/* Image */}
-      <div className="relative w-full aspect-square sm:aspect-auto sm:h-64 bg-slate-200">
+      <div className="relative w-full aspect-square bg-slate-200">
         <div className="absolute top-0 left-0 bg-slate-300 h-6 w-16 rounded-br-xl" />
       </div>
 

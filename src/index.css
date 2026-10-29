@@ -111,3 +111,24 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .discount-badge, .discount-badge-shine { animation: none; }
 }
+
+
+/* Product info tabs: the admin HTML carries inline margins/white-space, so normalise lists here */
+.info-content ul,
+.info-content ol {
+  margin: 0 !important;
+  padding-left: 1.25rem !important;
+}
+.info-content ul { list-style: disc !important; }
+.info-content ol { list-style: decimal !important; }
+.info-content li {
+  margin: 0 0 0.25rem !important;
+  padding: 0 !important;
+  white-space: normal !important;
+}
+.info-content li::marker { color: #000; }
+.info-content li > p {
+  display: inline !important;
+  margin: 0 !important;
+}
+.info-content p { margin: 0 0 0.5rem !important; }

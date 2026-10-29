@@ -435,7 +435,7 @@ function ProductCard({ product }) {
       )}
 
       {/* Responsive Image */}
-      <div className="relative w-full h-48 sm:h-64 overflow-hidden bg-gray-50">
+      <div className="relative w-full aspect-square overflow-hidden bg-gray-50">
         <img
           src={displayImage}
           alt={typeof name === "string" ? name : "Product Image"}
