@@ -60,7 +60,7 @@ const ProductDetailsPage = () => {
   }, [selectedImage]);
 
   const [quantity, setQuantity] = useState(1);
-  // Several sections can stay open, so opening one never collapses another above it and pulls the page up
+  // Only one info tab is open at a time (kept as an array of indexes)
   const [openAccordions, setOpenAccordions] = useState([]);
 
   // Variant States
@@ -120,10 +120,7 @@ const ProductDetailsPage = () => {
 
   // Toggle Accordion
   const toggleAccordion = (index) => {
-    setOpenAccordions((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-    );
-  };
+    setOpenAccordions((prev) => (prev.includes(index) ? [] : [index]));  };
 
   // Submit Review Handler
   const handleReviewSubmit = async (e) => {
@@ -317,252 +314,7 @@ const ProductDetailsPage = () => {
     dispatch(addItem(cartPayload));
   };
 
-  return (
-    <div className="bg-white font-sans text-gray-800 relative">
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-gray-500 mb-6 flex items-center gap-1.5 flex-wrap">
-          <Link to="/" className="hover:text-pink-600 transition-colors">Home</Link>
-          <span className="text-gray-300">/</span>
-          <a href="#" className="hover:text-pink-600 transition-colors">Shop</a>
-          {product.category && (
-            <>
-              <span className="text-gray-300">/</span>
-              <span className="hover:text-pink-600 transition-colors">{product.category.name}</span>
-            </>
-          )}
-          {product.sub_category && (
-            <>
-              <span className="text-gray-300">/</span>
-              <span className="hover:text-pink-600 transition-colors">{product.sub_category.name}</span>
-            </>
-          )}
-          <span className="text-gray-300">/</span>
-          <span className="text-pink-600 font-semibold truncate max-w-xs">{product.name}</span>
-        </nav>
-
-        {/* Product Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-12 gap-8 mb-16 lg:items-start">
-          {/* Gallery (fixed size + sticky, so expanding the accordions never resizes the image) */}
-          <div className="flex flex-col-reverse md:flex-row gap-3 lg:sticky lg:top-28">
-            <div className="relative shrink-0 md:w-20">
-              {thumbScroll.up && (
-                <button
-                  type="button"
-                  onClick={() => scrollThumbs(-1)}
-                  aria-label="Scroll thumbnails up"
-                  className="hidden md:flex absolute top-0 inset-x-0 z-10 h-9 items-start justify-center rounded-t-lg bg-gradient-to-b from-white via-white/90 to-transparent"
-                >
-                  <span className="mt-0.5 w-7 h-7 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-pink-500 hover:bg-pink-500 hover:text-white transition-colors">
-                    <ChevronUp className="w-4 h-4" />
-                  </span>
-                </button>
-              )}
-              <div
-                ref={thumbsRef}
-                onScroll={updateThumbScroll}
-                className="flex md:flex-col gap-3 overflow-x-auto md:overflow-x-hidden md:overflow-y-auto md:max-h-[600px] pb-1 md:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-              >
-              {galleryImages.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedImage(idx)}
-                  className={`w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200 bg-white ${
-                    selectedImage === idx
-                      ? 'border-pink-500 ring-2 ring-pink-100'
-                      : 'border-gray-200 hover:border-gray-300 opacity-80 hover:opacity-100'
-                  }`}
-                >
-                  <img src={img.url} alt={`Thumb ${idx}`} className="w-full h-full object-contain p-1" />
-                </button>
-              ))}
-              </div>
-              {thumbScroll.down && (
-                <button
-                  type="button"
-                  onClick={() => scrollThumbs(1)}
-                  aria-label="Scroll thumbnails down"
-                  className="hidden md:flex absolute bottom-0 inset-x-0 z-10 h-9 items-end justify-center rounded-b-lg bg-gradient-to-t from-white via-white/90 to-transparent"
-                >
-                  <span className="mb-0.5 w-7 h-7 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-pink-500 hover:bg-pink-500 hover:text-white transition-colors">
-                    <ChevronDown className="w-4 h-4" />
-                  </span>
-                </button>
-              )}
-            </div>
-            <div className="relative w-full md:flex-1 h-[340px] sm:h-[420px] lg:h-[600px] overflow-hidden rounded-xl lg:cursor-zoom-in"
-              onMouseMove={handleZoomMove}
-              onMouseLeave={() => setZoom((z) => ({ ...z, active: false }))}
-            >
-              <img
-                src={galleryImages[selectedImage]?.url || mainImage}
-                alt={product.name}
-                draggable={false}
-                className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-200 ease-out will-change-transform"
-                style={{
-                  transform: zoom.active ? 'scale(2.5)' : 'scale(1)',
-                  transformOrigin: `${zoom.x}% ${zoom.y}%`,
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Details */}
-          <div className="flex flex-col">
-            <h1 className="text-2xl lg:text-[1.65rem] font-bold text-gray-900 leading-snug mb-2 tracking-tight">
-              {product.name}
-            </h1>
-
-            {/* Brand / Category display */}
-            {product.brand && (
-              <p className="text-lg text-gray-500 mb-3">
-                Brand: <span className="font-bold text-gray-800">{product.brand.name}</span>
-              </p>
-            )}
-
-            {/* Size Options (Conditional Render) */}
-            {isVariable && availableSizes.length > 0 && (
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">
-                  <span className="font-semibold text-gray-800">Size:</span> {selectedSize?.name || 'Select Size'}
-                </p>
-                <div className="flex gap-2 flex-wrap">
-                  {availableSizes.map((size) => (
-                    <button
-                      key={size.id}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-3.5 py-1.5 border text-xs font-semibold rounded-lg transition-colors ${
-                        selectedSize?.id === size.id
-                          ? 'border-pink-500 bg-pink-50 text-pink-600'
-                          : 'border-gray-200 text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      {size.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Color Options (Conditional Render) */}
-            {isVariable && availableColors.length > 0 && (
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">
-                  <span className="font-semibold text-gray-800">Color:</span> {selectedColor?.name || 'Select Color'}
-                </p>
-                <div className="flex gap-2 flex-wrap">
-                  {availableColors.map((color) => (
-                    <button
-                      key={color.id}
-                      onClick={() => handleColorSelect(color)}
-                      className={`px-3.5 py-1.5 border text-xs font-semibold rounded-lg transition-colors ${
-                        selectedColor?.id === color.id
-                          ? 'border-pink-500 bg-pink-50 text-pink-600'
-                          : 'border-gray-200 text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      {color.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Rating Placeholder */}
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl font-semibold text-gray-800">4.8/5</span>
-              <div className="flex text-amber-400 text-[30px] leading-none tracking-tight">★★★★★</div>
-              <span className="text-base text-gray-500">(25 Reviews)</span>
-            </div>
-
-            <div className="border-t border-gray-100 my-1"></div>
-
-            {/* Pricing Section */}
-            <div className="flex items-center flex-wrap gap-3 mt-4 mb-2">
-              <span className="text-3xl font-bold text-pink-600">
-                <span className="text-[26px] font-black mr-1.5 bg-gradient-to-br from-pink-500 to-rose-700 bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(219,39,119,0.25)]">৳</span>{Number(finalPrice).toFixed(2)}
-              </span>
-              {offerPrice && Number(regularPrice) > Number(finalPrice) && (
-                <>
-                  <span className="text-xl text-gray-400 line-through">৳ {Number(regularPrice).toFixed(2)}</span>
-                  <span className="text-lg font-semibold text-green-600">
-                    Save ৳ {(Number(regularPrice) - Number(finalPrice)).toFixed(2)}
-                  </span>
-                  <span className="discount-badge shrink-0">
-                  <span
-                    className="relative inline-flex items-center justify-center w-14 h-14 overflow-hidden bg-gradient-to-br from-pink-500 to-red-500 text-white"
-                    style={{
-                      clipPath:
-                        'polygon(100% 50%, 86.7% 59.83%, 93.3% 75%, 76.87% 76.87%, 75% 93.3%, 59.83% 86.7%, 50% 100%, 40.17% 86.7%, 25% 93.3%, 23.13% 76.87%, 6.7% 75%, 13.3% 59.83%, 0% 50%, 13.3% 40.17%, 6.7% 25%, 23.13% 23.13%, 25% 6.7%, 40.17% 13.3%, 50% 0%, 59.83% 13.3%, 75% 6.7%, 76.87% 23.13%, 93.3% 25%, 86.7% 40.17%)',
-                    }}
-                  >
-                    <span className="discount-badge-shine absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/80 to-transparent" />
-                    <span className="relative flex flex-col items-center leading-none -rotate-6">
-                      <span className="text-[13px] font-extrabold">
-                        {Math.round(((Number(regularPrice) - Number(finalPrice)) / Number(regularPrice)) * 100)}%
-                      </span>
-                      <span className="text-[8px] font-bold tracking-wide">OFF</span>
-                    </span>
-                  </span>
-                  </span>
-                </>
-              )}
-            </div>
-
-            {/* Stock Status */}
-            {inStock ? (
-              <p className="text-sm text-green-600 font-semibold mb-4 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-500"></span> In stock
-              </p>
-            ) : (
-              <p className="text-sm text-red-600 font-semibold mb-4 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-red-500"></span> Out of stock
-              </p>
-            )}
-
-            <div className="border-t border-gray-100 mb-5"></div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center gap-3 mb-8">
-              <button
-                onClick={() => setIsLiked(!isLiked)}
-                className={`h-12 w-12 shrink-0 flex items-center justify-center border rounded-xl transition-all duration-300 ease-in-out active:scale-95 ${
-                  isLiked
-                    ? 'bg-pink-500 border-pink-500 text-white shadow-md'
-                    : 'border-gray-200 text-pink-500 hover:bg-pink-50'
-                }`}
-                aria-label="Add to Wishlist"
-              >
-                <Heart
-                  className={`w-5 h-5 transition-transform duration-200 ${
-                    isLiked ? 'fill-white text-white scale-110' : 'text-pink-500'
-                  }`}
-                />
-              </button>
-
-              <div className="flex items-center h-12 border border-gray-200 rounded-xl overflow-hidden shrink-0">
-                <button onClick={() => handleQuantityChange('decrease')} className="w-10 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 font-bold transition-colors">-</button>
-                <span className="w-10 h-full flex items-center justify-center text-sm font-semibold border-x border-gray-200">{quantity}</span>
-                <button onClick={() => handleQuantityChange('increase')} className="w-10 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 font-bold transition-colors">+</button>
-              </div>
-
-              <button
-                onClick={handleAddToCart}
-                disabled={!inStock}
-                className={`flex-1 h-12 font-bold rounded-xl transition-all uppercase text-sm tracking-wide shadow-sm ${
-                  inStock
-                    ? 'bg-pink-500 text-white hover:bg-pink-600 hover:shadow-md'
-                    : 'bg-gray-200 text-gray-500 cursor-not-allowed shadow-none'
-                }`}
-              >
-                Add To Cart
-              </button>
-            </div>
-
-            {/* Accordions */}
-           <div className="border-t border-gray-100 text-sm">
-  {[
+  const infoSections = [
     { 
       title: 'Description', 
       content: product.description ? (
@@ -667,41 +419,254 @@ const ProductDetailsPage = () => {
         </div>
       ) 
     },
-  ].map((item, index) => {
-    const isOpen = openAccordions.includes(index);
+  ];
 
-    return (
-      <div key={index} className="border-b border-gray-100 overflow-hidden">
-        <button
-          onClick={() => toggleAccordion(index)}
-          className="w-full py-4 flex justify-between items-center text-left font-semibold text-gray-700 hover:text-pink-600 transition-colors duration-200"
-        >
-          <span>{item.title}</span>
-          <ChevronDown
-            className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-300 ease-in-out ${
-              isOpen ? 'rotate-180 text-pink-600' : 'rotate-0'
-            }`}
-          />
-        </button>
+  return (
+    <div className="bg-white font-sans text-gray-800 relative">
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        {/* Breadcrumb */}
+        <nav className="text-xs text-gray-500 mb-6 flex items-center gap-1.5 flex-wrap">
+          <Link to="/" className="hover:text-pink-600 transition-colors">Home</Link>
+          <span className="text-gray-300">/</span>
+          <a href="#" className="hover:text-pink-600 transition-colors">Shop</a>
+          {product.category && (
+            <>
+              <span className="text-gray-300">/</span>
+              <span className="hover:text-pink-600 transition-colors">{product.category.name}</span>
+            </>
+          )}
+          {product.sub_category && (
+            <>
+              <span className="text-gray-300">/</span>
+              <span className="hover:text-pink-600 transition-colors">{product.sub_category.name}</span>
+            </>
+          )}
+          <span className="text-gray-300">/</span>
+          <span className="text-pink-600 font-semibold truncate max-w-xs">{product.name}</span>
+        </nav>
 
-        <div
-          className={`grid transition-all duration-300 ease-in-out ${
-            isOpen
-              ? 'grid-rows-[1fr] opacity-100 pb-4'
-              : 'grid-rows-[0fr] opacity-0 pb-0'
-          }`}
-        >
-          <div className="overflow-hidden text-sm text-gray-600 leading-relaxed">
-            {item.content}
+        {/* Product Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-12 gap-8 mb-10 lg:items-stretch">
+          {/* Gallery (fixed size + sticky, so expanding the accordions never resizes the image) */}
+          <div className="flex flex-col-reverse md:flex-row gap-3 lg:sticky lg:top-28">
+            <div className="relative shrink-0 md:w-20">
+              {thumbScroll.up && (
+                <button
+                  type="button"
+                  onClick={() => scrollThumbs(-1)}
+                  aria-label="Scroll thumbnails up"
+                  className="hidden md:flex absolute top-0 inset-x-0 z-10 h-9 items-start justify-center rounded-t-lg bg-gradient-to-b from-white via-white/90 to-transparent"
+                >
+                  <span className="mt-0.5 w-7 h-7 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-pink-500 hover:bg-pink-500 hover:text-white transition-colors">
+                    <ChevronUp className="w-4 h-4" />
+                  </span>
+                </button>
+              )}
+              <div
+                ref={thumbsRef}
+                onScroll={updateThumbScroll}
+                className="flex md:flex-col gap-3 overflow-x-auto md:overflow-x-hidden md:overflow-y-auto md:absolute md:inset-0 pb-1 md:pb-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              >
+              {galleryImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(idx)}
+                  className={`w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200 bg-white ${
+                    selectedImage === idx
+                      ? 'border-pink-500 ring-2 ring-pink-100'
+                      : 'border-gray-200 hover:border-gray-300 opacity-80 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img.url} alt={`Thumb ${idx}`} className="w-full h-full object-contain p-1" />
+                </button>
+              ))}
+              </div>
+              {thumbScroll.down && (
+                <button
+                  type="button"
+                  onClick={() => scrollThumbs(1)}
+                  aria-label="Scroll thumbnails down"
+                  className="hidden md:flex absolute bottom-0 inset-x-0 z-10 h-9 items-end justify-center rounded-b-lg bg-gradient-to-t from-white via-white/90 to-transparent"
+                >
+                  <span className="mb-0.5 w-7 h-7 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-100 text-pink-500 hover:bg-pink-500 hover:text-white transition-colors">
+                    <ChevronDown className="w-4 h-4" />
+                  </span>
+                </button>
+              )}
+            </div>
+            <div className="relative w-full md:flex-1 aspect-square overflow-hidden rounded-xl lg:cursor-zoom-in"
+              onMouseMove={handleZoomMove}
+              onMouseLeave={() => setZoom((z) => ({ ...z, active: false }))}
+            >
+              <img
+                src={galleryImages[selectedImage]?.url || mainImage}
+                alt={product.name}
+                draggable={false}
+                className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-200 ease-out will-change-transform"
+                style={{
+                  transform: zoom.active ? 'scale(2.5)' : 'scale(1)',
+                  transformOrigin: `${zoom.x}% ${zoom.y}%`,
+                }}
+              />
+            </div>
           </div>
-        </div>
-      </div>
-    );
-  })}
-</div>
+
+          {/* Details */}
+          <div className="flex flex-col">
+            <h1 className="text-2xl lg:text-[1.65rem] font-bold text-gray-900 leading-snug mb-4 tracking-tight lg:-mt-1.5">
+              {product.name}
+            </h1>
+
+            {/* Brand / Category display */}
+            {product.brand && (
+              <p className="text-lg text-gray-500 mb-3">
+                Brand: <span className="font-semibold text-black">{product.brand.name}</span>
+              </p>
+            )}
+
+            {/* Size Options (Conditional Render) */}
+            {isVariable && availableSizes.length > 0 && (
+              <div className="mb-3">
+                <p className="text-sm text-gray-600 mb-2">
+                  <span className="font-semibold text-gray-800">Size:</span> {selectedSize?.name || 'Select Size'}
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  {availableSizes.map((size) => (
+                    <button
+                      key={size.id}
+                      onClick={() => setSelectedSize(size)}
+                      className={`px-3.5 py-1.5 border text-xs font-semibold rounded-lg transition-colors ${
+                        selectedSize?.id === size.id
+                          ? 'border-pink-500 bg-pink-50 text-pink-600'
+                          : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      {size.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Color Options (Conditional Render) */}
+            {isVariable && availableColors.length > 0 && (
+              <div className="mb-3">
+                <p className="text-sm text-gray-600 mb-2">
+                  <span className="font-semibold text-gray-800">Color:</span> {selectedColor?.name || 'Select Color'}
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  {availableColors.map((color) => (
+                    <button
+                      key={color.id}
+                      onClick={() => handleColorSelect(color)}
+                      className={`px-3.5 py-1.5 border text-xs font-semibold rounded-lg transition-colors ${
+                        selectedColor?.id === color.id
+                          ? 'border-pink-500 bg-pink-50 text-pink-600'
+                          : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      {color.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Rating Placeholder */}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xl font-semibold text-gray-800">4.8/5</span>
+              <div className="flex text-amber-400 text-[30px] leading-none tracking-tight">★★★★★</div>
+              <span className="text-base text-gray-500">(25 Reviews)</span>
+            </div>
+
+            <div className="border-t border-gray-100"></div>
+
+            {/* Pricing Section */}
+            <div className="flex items-center flex-wrap gap-3 mt-3 mb-1">
+              <span className="text-3xl font-bold text-pink-600">
+                <span className="text-[26px] font-black mr-1.5 bg-gradient-to-br from-pink-500 to-rose-700 bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(219,39,119,0.25)]">৳</span>{Number(finalPrice).toFixed(2)}
+              </span>
+              {offerPrice && Number(regularPrice) > Number(finalPrice) && (
+                <>
+                  <span className="text-xl text-gray-400 line-through">৳ {Number(regularPrice).toFixed(2)}</span>
+                  <span className="text-lg font-semibold text-green-600">
+                    Save ৳ {(Number(regularPrice) - Number(finalPrice)).toFixed(2)}
+                  </span>
+                  <span className="discount-badge shrink-0">
+                  <span
+                    className="relative inline-flex items-center justify-center w-14 h-14 overflow-hidden bg-gradient-to-br from-pink-500 to-red-500 text-white"
+                    style={{
+                      clipPath:
+                        'polygon(100% 50%, 86.7% 59.83%, 93.3% 75%, 76.87% 76.87%, 75% 93.3%, 59.83% 86.7%, 50% 100%, 40.17% 86.7%, 25% 93.3%, 23.13% 76.87%, 6.7% 75%, 13.3% 59.83%, 0% 50%, 13.3% 40.17%, 6.7% 25%, 23.13% 23.13%, 25% 6.7%, 40.17% 13.3%, 50% 0%, 59.83% 13.3%, 75% 6.7%, 76.87% 23.13%, 93.3% 25%, 86.7% 40.17%)',
+                    }}
+                  >
+                    <span className="discount-badge-shine absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/80 to-transparent" />
+                    <span className="relative flex flex-col items-center leading-none -rotate-6">
+                      <span className="text-[13px] font-extrabold">
+                        {Math.round(((Number(regularPrice) - Number(finalPrice)) / Number(regularPrice)) * 100)}%
+                      </span>
+                      <span className="text-[8px] font-bold tracking-wide">OFF</span>
+                    </span>
+                  </span>
+                  </span>
+                </>
+              )}
+            </div>
+
+            {/* Stock Status */}
+            {inStock ? (
+              <p className="text-sm text-green-600 font-semibold mb-2 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-500"></span> In stock
+              </p>
+            ) : (
+              <p className="text-sm text-red-600 font-semibold mb-2 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-red-500"></span> Out of stock
+              </p>
+            )}
+
+            <div className="border-t border-gray-100 mb-3"></div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3 mb-4">
+              <button
+                onClick={() => setIsLiked(!isLiked)}
+                className={`h-12 w-12 shrink-0 flex items-center justify-center border rounded-xl transition-all duration-300 ease-in-out active:scale-95 ${
+                  isLiked
+                    ? 'bg-pink-500 border-pink-500 text-white shadow-md'
+                    : 'border-gray-200 text-pink-500 hover:bg-pink-50'
+                }`}
+                aria-label="Add to Wishlist"
+              >
+                <Heart
+                  className={`w-5 h-5 transition-transform duration-200 ${
+                    isLiked ? 'fill-white text-white scale-110' : 'text-pink-500'
+                  }`}
+                />
+              </button>
+
+              <div className="flex items-center h-12 border border-gray-200 rounded-xl overflow-hidden shrink-0">
+                <button onClick={() => handleQuantityChange('decrease')} className="w-10 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 font-bold transition-colors">-</button>
+                <span className="w-10 h-full flex items-center justify-center text-sm font-semibold border-x border-gray-200">{quantity}</span>
+                <button onClick={() => handleQuantityChange('increase')} className="w-10 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 font-bold transition-colors">+</button>
+              </div>
+
+              <button
+                onClick={handleAddToCart}
+                disabled={!inStock}
+                className={`flex-1 h-12 font-bold rounded-xl transition-all uppercase text-sm tracking-wide shadow-sm ${
+                  inStock
+                    ? 'bg-pink-500 text-white hover:bg-pink-600 hover:shadow-md'
+                    : 'bg-gray-200 text-gray-500 cursor-not-allowed shadow-none'
+                }`}
+              >
+                Add To Cart
+              </button>
+            </div>
+
             {/* Trust Badges */}
-            <div className="flex-1 min-h-8" />
-            <div className="grid grid-cols-3 gap-3 text-center pt-6 border-t border-gray-100 text-xs text-gray-500">
+            <div className="flex-1 min-h-2" />
+            <div className="grid grid-cols-3 gap-3 text-center pt-4 border-t border-gray-100 text-xs text-gray-500">
               <div className="flex flex-col items-center gap-2 p-3 rounded-xl border border-gray-100 bg-white">
                 <div className="p-3 bg-pink-50 rounded-full">
                   <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-pink-600" />
@@ -723,6 +688,36 @@ const ProductDetailsPage = () => {
             </div>
           </div>
         </div>
+
+
+        {/* Info Tabs: sit side by side, the active one expands below */}
+        <section className="mb-14 max-w-4xl mx-auto">
+          <div className="flex flex-wrap justify-center gap-x-8 sm:gap-x-12 gap-y-2">
+            {infoSections.map((item, index) => {
+              const isOpen = openAccordions.includes(index);
+              return (
+                <button
+                  key={item.title}
+                  onClick={() => toggleAccordion(index)}
+                  className={`py-2 text-[13px] uppercase tracking-[0.18em] border-b transition-colors duration-200 ${
+                    isOpen
+                      ? 'border-pink-500 text-pink-600 font-semibold'
+                      : 'border-transparent text-gray-500 font-medium'
+                  }`}
+                >
+                  {item.title}
+                </button>
+              );
+            })}
+          </div>
+          {openAccordions.length > 0 && (
+            <div className="mt-6 pt-6 border-t border-gray-100 text-sm text-gray-600 leading-relaxed">
+              {openAccordions.map((index) => (
+                <div key={infoSections[index].title}>{infoSections[index].content}</div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* Similar Products Grid */}
         {similarProducts.length > 0 && (
