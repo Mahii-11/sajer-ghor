@@ -28,7 +28,7 @@ export default function DealsSection() {
   return (
     <section id="deals-section">
       <div>
-        <SectionTitle title="DEALS YOU CANNOT MISS"  />
+        <SectionTitle title="Glow More, Pay Less"  />
 
         {/* Loading State Skeleton */}
         {loading ? (

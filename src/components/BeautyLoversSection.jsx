@@ -13,6 +13,8 @@ const formatTestimonial = (item, index) => {
   return {
     id: item.id ?? index,
     name: item.name ?? '',
+    // Static for now; replace with the API field (e.g. item.designation) once available
+    designation: 'Designation',
     avatarImg: item.image ?? item.avatarImg ?? '',
     rating: Number.isFinite(Number(item.rating)) ? Number(item.rating) : 5,
     review: item.review ?? '',
@@ -44,9 +46,16 @@ const TestimonialCard = ({ item }) => {
       <div className="rounded-[24px] border border-pink-300 pt-20 pb-6 px-6 text-center shadow-sm flex flex-col justify-between min-h-[360px]">
         <div>
           {/* User Name */}
-          <h3 className="font-bold text-[#222222] text-lg tracking-wide mb-3">
+          <h3 className="font-bold text-[#222222] text-lg tracking-wide">
             {item.name}
           </h3>
+
+          {/* Designation */}
+          {item.designation && (
+            <p className="text-[13px] font-medium text-[#db2777] mt-0.5 mb-3">
+              {item.designation}
+            </p>
+          )}
 
           {/* Star Rating */}
           <div className="flex justify-center gap-1 text-amber-500 mb-4">
@@ -288,7 +297,7 @@ export default function BeautyLoversSection() {
   return (
     <section className="px-4 flex flex-col items-center">
       {/* Heading */}
-      <h2 className="text-xl md:text-2xl font-bold text-[#333333] mb-8 md:mb-10 tracking-wide">
+      <h2 className="text-lg md:text-xl font-bold text-[#333333] mb-8 md:mb-10 tracking-wide">
         BeautyLovers Speak
       </h2>
 

@@ -31,7 +31,7 @@ export default function TopBrandsSection() {
   return (
     <section id="top-brands-section">
       <div>
-        <SectionTitle title="TOP BRANDS & OFFERS"  />
+        <SectionTitle title="Best Brands, Best Deals"  />
                     
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {topbrand.map((brand) => (

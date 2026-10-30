@@ -103,17 +103,17 @@ export default function HeroBanner() {
   return (
     <div
       id="hero-carousel"
-      className="relative w-full overflow-hidden h-[150px] sm:h-[240px] md:h-[340px] lg:h-[400px] xl:h-[460px] group"
+      className="relative w-full overflow-hidden group"
     >
       {/* Slides Wrapper */}
       <div
-        className="flex h-full w-full transition-transform duration-700 ease-out"
+        className="flex w-full items-start transition-transform duration-700 ease-out"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {slider.map((banner) => (
           <div
             key={banner.id}
-            className="relative h-full w-full shrink-0 overflow-hidden"
+            className="relative w-full shrink-0 overflow-hidden"
           >
             <picture>
               {banner.mobile_image && (
@@ -122,7 +122,7 @@ export default function HeroBanner() {
               <img
                 src={banner.image}
                 alt={`Banner ${banner.id}`}
-                className="w-full h-full object-cover object-center"
+                className="block w-full h-auto"
               />
             </picture>
           </div>

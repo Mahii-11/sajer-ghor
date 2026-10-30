@@ -8,7 +8,7 @@ export default function SectionTitle({ title, subtitle }) {
           {subtitle}
         </span>
       )}
-      <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-wide relative inline-block">
+      <h2 className="text-lg md:text-xl font-bold text-gray-900 tracking-wide relative inline-block">
         {title}
         <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#db2777] rounded-full"></span>
       </h2>

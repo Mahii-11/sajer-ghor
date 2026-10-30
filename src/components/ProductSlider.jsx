@@ -25,7 +25,7 @@ const getPerView = (width) => (width >= 768 ? 4 : width >= 640 ? 3 : 2);
 export function SliderHeader({ title, viewAllTo, className = '' }) {
   return (
     <div className={`flex items-end justify-between ${className}`}>
-      <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-wide relative inline-block">
+      <h2 className="text-lg md:text-xl font-bold text-gray-900 tracking-wide relative inline-block">
         {title}
       </h2>
 

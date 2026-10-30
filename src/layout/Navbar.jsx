@@ -77,12 +77,10 @@ export default function Navbar({
   }, [mobileMenuOpen]);
 
   const promoPills = [
-    { name: "SHOP", color: "bg-linear-to-br from-slate-700 to-slate-900 hover:from-slate-800 hover:to-black shadow-slate-400/40", path: "/shop" },
-    { name: "COMBO", color: "bg-linear-to-br from-purple-500 to-fuchsia-600 hover:from-purple-600 hover:to-fuchsia-700 shadow-purple-300/60", path: "/offers/combo" },
-    { name: "BOGO", color: "bg-linear-to-br from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 shadow-pink-300/60", path: "/offers/bogo" },
-    { name: "CLEARANCE SALE", color: "bg-linear-to-br from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-orange-300/60", path: "/offers/clearance" },
-    { name: "BURKA", color: "bg-linear-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-300/60", path: "/category/burka" },
-    { name: "MEN", color: "bg-linear-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-blue-300/60", path: "/category/men" }
+    { name: "SHOP", color: "bg-[#0b5c63] hover:bg-[#084a50]", path: "/shop" },
+    { name: "COMBO", color: "bg-[#9461f0] hover:bg-[#8049e0]", path: "/offers/combo" },
+    { name: "CLEARANCE SALE", color: "bg-[#c8102e] hover:bg-[#a80d26]", path: "/offers/clearance" },
+    { name: "MEN", color: "bg-[#0e80b2] hover:bg-[#0b6a95]", path: "/category/men" }
   ];
 
   const drawer = (
@@ -331,7 +329,7 @@ export default function Navbar({
         >
           <div className="flex items-center justify-between gap-4 py-2 md:py-2.5 w-full">
 
-            <nav className="hidden md:flex flex-1 min-w-0 flex-nowrap items-center gap-0 whitespace-nowrap overflow-x-auto no-scrollbar">
+            <nav className="hidden md:flex flex-1 min-w-0 flex-nowrap items-center gap-2 lg:gap-3 whitespace-nowrap overflow-x-auto no-scrollbar">
               {loading ? (
                 <span className="text-sm text-gray-400 font-medium">Loading categories...</span>
               ) : (
