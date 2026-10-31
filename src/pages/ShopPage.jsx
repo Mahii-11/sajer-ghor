@@ -111,15 +111,10 @@ function CountPill({ active, children }) {
   );
 }
 
-// Matched by item object or string item reference
-const isCategoryActive = (item, active) => {
-  const catName = typeof item === "string" ? item : item.name;
-  return (
-    active === catName ||
-    (typeof active === "object" && active?.id === item.id) ||
-    active === item.slug
-  );
-};
+// `active` is the list of selected nodes; each carries `path` (its id plus all its
+// parents' ids), so a row is active when it is selected or sits above a selected one.
+const isCategoryActive = (item, active) =>
+  Array.isArray(active) && active.some((a) => a.path?.includes(item.id));
 
 function CategoryRow({ item, depth, active, onSelect }) {
   const catName = typeof item === "string" ? item : item.name;
@@ -290,14 +285,11 @@ function Toolbar({
   setSearchQuery,
   sortBy,
   setSortBy,
-  activeCategory,
+  activeCategory = [],
+  onRemoveCategory,
   onClearCategory,
 }) {
   const searchPlaceholder = useTypewriterPlaceholder(SEARCH_SUGGESTIONS, !!searchQuery);
-  const activeCatDisplay =
-    typeof activeCategory === "object"
-      ? activeCategory?.name
-      : activeCategory;
 
   return (
     <div className="mb-6 flex flex-col gap-4">
@@ -316,17 +308,32 @@ function Toolbar({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        {activeCategory ? (
-          <span className="inline-flex items-center gap-2 rounded-full bg-pink-50 px-3.5 py-1.5 text-xs font-semibold text-pink-600 border border-pink-200">
-            Category: {activeCatDisplay}
-            <button
-              onClick={onClearCategory}
-              className="hover:text-pink-800"
-              aria-label="Clear category filter"
-            >
-              <X size={14} />
-            </button>
-          </span>
+        {activeCategory.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {activeCategory.map((cat) => (
+              <span
+                key={cat.id}
+                className="inline-flex items-center gap-2 rounded-full bg-pink-50 px-3.5 py-1.5 text-xs font-semibold text-pink-600 border border-pink-200"
+              >
+                {cat.name}
+                <button
+                  onClick={() => onRemoveCategory(cat)}
+                  className="hover:text-pink-800"
+                  aria-label={`Remove ${cat.name} filter`}
+                >
+                  <X size={14} />
+                </button>
+              </span>
+            ))}
+            {activeCategory.length > 1 && (
+              <button
+                onClick={onClearCategory}
+                className="text-xs font-semibold text-gray-500 hover:text-pink-600"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
         ) : (
           <span className="text-xs text-gray-500 font-medium">
             Showing all products
@@ -617,7 +624,7 @@ export default function ShopPage({
   fetching = false,
   pagination = {},
   onPageChange,
-  activeCategory = null,
+  activeCategory = [],
   onSelectCategory,
   onClearCategory,
   activeBrandIds = [],
@@ -662,6 +669,7 @@ export default function ShopPage({
             sortBy={sortBy}
             setSortBy={onSortChange}
             activeCategory={activeCategory}
+            onRemoveCategory={onSelectCategory}
             onClearCategory={onClearCategory}
           />
 

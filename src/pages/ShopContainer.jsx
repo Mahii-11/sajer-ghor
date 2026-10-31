@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import ShopPage from "./ShopPage";
 import { getShopProducts, getNavMenu } from "../services/api";
 import ShopPageSkeleton from "../loader/ShopPageSkeleton";
@@ -13,8 +14,9 @@ const SORT_MAP = {
 
 const DEBOUNCE_MS = 400;
 
-// Menu (category > sub category) -> sidebar tree. Ids are prefixed so a category
-// and a sub category with the same numeric id never look "active" together.
+// Menu (category > sub category > child category) -> sidebar tree. Ids are prefixed
+// so levels with the same numeric id never look "active" together. `query` holds the
+// `urlPath` is the node's slug path ("skin/cleansers/facial-wash"), one `cat` URL param each.
 const toCategoryTree = (menu) =>
   (Array.isArray(menu) ? menu : []).map((cat) => ({
     id: `c-${cat.id}`,
@@ -22,22 +24,35 @@ const toCategoryTree = (menu) =>
     type: "category",
     name: cat.name,
     slug: cat.slug,
+    urlPath: cat.slug,
     children: (cat.sub_categories || []).map((sub) => ({
       id: `s-${sub.id}`,
       apiId: sub.id,
       type: "sub_category",
       name: sub.name,
       slug: sub.slug,
+      urlPath: `${cat.slug}/${sub.slug}`,
+      children: (sub.child_categories || []).map((child) => ({
+        id: `ch-${child.id}`,
+        apiId: child.id,
+        type: "child_category",
+        name: child.name,
+        slug: child.slug,
+        urlPath: `${cat.slug}/${sub.slug}/${child.slug}`,
+      })),
     })),
   }));
 
-const findCategory = (tree, id) => {
-  for (const cat of tree) {
-    if (cat.id === id) return cat;
-    const sub = cat.children.find((c) => c.id === id);
-    if (sub) return sub;
-  }
-  return null;
+// Node named by a slug path. `path` lists the ids of it and all its parents, so
+// every level above a selected node is active too.
+const resolveSelection = (tree, urlPath) => {
+  const [catSlug, subSlug, childSlug] = urlPath.split("/");
+  const cat = tree.find((c) => c.slug === catSlug);
+  if (!cat) return null;
+  const sub = subSlug ? cat.children.find((s) => s.slug === subSlug) : null;
+  const child = sub && childSlug ? (sub.children || []).find((c) => c.slug === childSlug) : null;
+  const node = child || sub || cat;
+  return { ...node, path: [cat.id, sub?.id, child?.id].filter(Boolean) };
 };
 
 // The API has no filter-list endpoint, so brands (with counts) and the price
@@ -88,8 +103,20 @@ export default function ShopContainer() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [fetching, setFetching] = useState(false);
 
+  // Category filter lives in the URL as repeated `cat` params (?cat=skin&cat=hair) so
+  // menu links, refresh and back/forward all select the same thing.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const catKey = searchParams.getAll("cat").join(",");
+  const [categoriesReady, setCategoriesReady] = useState(false);
+  const selectedCategories = useMemo(() => {
+    const seen = new Set();
+    return (catKey ? catKey.split(",") : [])
+      .map((urlPath) => resolveSelection(meta.categories, urlPath))
+      .filter((node) => node && !seen.has(node.id) && seen.add(node.id));
+  }, [meta.categories, catKey]);
+  const selectedKey = selectedCategories.map((c) => c.id).join(",");
+
   // Filter state
-  const [category, setCategory] = useState(null); // tree id ("c-146" / "s-46")
   const [brandIds, setBrandIds] = useState([]);
   const [priceRange, setPriceRange] = useState(null); // [min, max] | null (= untouched)
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,7 +135,8 @@ export default function ShopContainer() {
       .then((menu) => {
         if (active) setMeta((prev) => ({ ...prev, categories: toCategoryTree(menu) }));
       })
-      .catch((err) => console.error("Shop categories load failed:", err));
+      .catch((err) => console.error("Shop categories load failed:", err))
+      .finally(() => { if (active) setCategoriesReady(true); });
     return () => { active = false; };
   }, []);
 
@@ -118,7 +146,17 @@ export default function ShopContainer() {
     setter(value);
   };
 
+  // A menu link changes the URL without remounting this page, so reset the page here too
+  const [prevCatKey, setPrevCatKey] = useState(catKey);
+  if (prevCatKey !== catKey) {
+    setPrevCatKey(catKey);
+    setPage(1);
+  }
+
   useEffect(() => {
+    // A category in the URL can only be turned into an id once the menu has loaded
+    if (catKey && !categoriesReady) return;
+
     const id = ++requestId.current;
 
     const load = async () => {
@@ -130,9 +168,13 @@ export default function ShopContainer() {
           search: debouncedSearch.trim() || null,
           sort: SORT_MAP[sortBy] || "default",
         };
-        const selectedCategory = category ? findCategory(meta.categories, category) : null;
-        if (selectedCategory?.type === "category") params.category_id = [selectedCategory.apiId];
-        if (selectedCategory?.type === "sub_category") params.sub_category_id = [selectedCategory.apiId];
+        // Ids of one level are OR-ed by the API, different levels are AND-ed
+        // (hence toggleCategory only mixes nodes of the same level).
+        const idsOf = (type) =>
+          selectedCategories.filter((c) => c.type === type).map((c) => c.apiId);
+        if (idsOf("category").length) params.category_id = idsOf("category");
+        if (idsOf("sub_category").length) params.sub_category_id = idsOf("sub_category");
+        if (idsOf("child_category").length) params.child_category_id = idsOf("child_category");
         if (brandIds.length) params.brand_id = brandIds;
         if (debouncedPrice) {
           params.min_price = debouncedPrice[0];
@@ -169,15 +211,28 @@ export default function ShopContainer() {
     };
 
     load();
-  }, [page, category, brandIds, debouncedSearch, debouncedPrice, sortBy]);
+  }, [page, selectedKey, categoriesReady, brandIds, debouncedSearch, debouncedPrice, sortBy]);
 
   const handlePageChange = (nextPage) => {
     setPage(nextPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const toggleCategory = (id) =>
-    withReset(setCategory)(category === id ? null : id);
+  const setCategoryPaths = (nodes) =>
+    setSearchParams({ cat: nodes.map((n) => n.urlPath) });
+
+  // Select / unselect a node. Nodes of the same level add up (like brands); picking
+  // a node of another level starts a new selection, because the API would
+  // intersect different levels instead of merging them.
+  const toggleCategory = (node) => {
+    if (selectedCategories.some((c) => c.id === node.id)) {
+      setCategoryPaths(selectedCategories.filter((c) => c.id !== node.id));
+    } else if (selectedCategories.every((c) => c.type === node.type)) {
+      setCategoryPaths([...selectedCategories, node]);
+    } else {
+      setCategoryPaths([node]);
+    }
+  };
 
   const toggleBrand = (brandId) =>
     withReset(setBrandIds)(
@@ -197,9 +252,9 @@ export default function ShopContainer() {
       fetching={fetching}
       pagination={pagination}
       onPageChange={handlePageChange}
-      activeCategory={category ? findCategory(meta.categories, category) : null}
-      onSelectCategory={(cat) => toggleCategory(cat.id)}
-      onClearCategory={() => withReset(setCategory)(null)}
+      activeCategory={selectedCategories}
+      onSelectCategory={toggleCategory}
+      onClearCategory={() => setSearchParams({})}
       activeBrandIds={brandIds}
       onToggleBrand={toggleBrand}
       priceRange={priceRange}

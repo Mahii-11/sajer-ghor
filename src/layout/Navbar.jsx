@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FaCartPlus } from 'react-icons/fa6';
 import { Search, Truck, User, Menu, X, ChevronDown } from 'lucide-react';
 import { getTotalCartQuantity, openCartPopup } from "../cart/cartSlice";
@@ -15,6 +15,14 @@ const SEARCH_SUGGESTIONS = [
   'Search for perfume...',
   'Search for moisturizer...',
 ];
+
+// Menu links open the shop page filtered by the clicked level; the slugs of every
+// parent level are kept in the URL ("cat/sub/child") so the shop page can mark
+// them all active.
+const shopCategoryUrl = (cat, sub, child) => {
+  const path = [cat.slug, sub?.slug, sub && child?.slug].filter(Boolean).join('/');
+  return `/shop?${new URLSearchParams({ cat: path }).toString()}`;
+};
 
 export default function Navbar({
   cartItemsCount = 0, 
@@ -37,6 +45,14 @@ export default function Navbar({
   const [activeMobileCat, setActiveMobileCat] = useState(null);
   const [activeMobileSubCat, setActiveMobileSubCat] = useState(null);
   const [hoveredCat, setHoveredCat] = useState(null);
+
+  // Active menu paths come from the shop URL (?cat=skin/cleansers&cat=...), one per selection
+  const { pathname, search } = useLocation();
+  const activePaths = pathname === '/shop'
+    ? new URLSearchParams(search).getAll('cat').map((p) => p.split('/'))
+    : [];
+  const isActivePath = (...slugs) =>
+    activePaths.some((p) => slugs.every((slug, i) => p[i] === slug));
 
   const totalQuantity = useSelector(getTotalCartQuantity) || 0;
   const dispatch = useDispatch();
@@ -77,10 +93,10 @@ export default function Navbar({
   }, [mobileMenuOpen]);
 
   const promoPills = [
-    { name: "SHOP", color: "bg-[#0b5c63] hover:bg-[#084a50]", path: "/shop" },
-    { name: "COMBO", color: "bg-[#9461f0] hover:bg-[#8049e0]", path: "/offers/combo" },
-    { name: "CLEARANCE SALE", color: "bg-[#c8102e] hover:bg-[#a80d26]", path: "/offers/clearance" },
-    { name: "FOR HIM", color: "bg-[#0e80b2] hover:bg-[#0b6a95]", path: "/category/men" }
+    { name: "SHOP", color: "bg-[#0b5c63]", path: "/shop" },
+    { name: "COMBO", color: "bg-[#9461f0]", path: "/offers/combo" },
+    { name: "CLEARANCE SALE", color: "bg-[#c8102e]", path: "/offers/clearance" },
+    { name: "FOR HIM", color: "bg-[#0e80b2]", path: "/category/men" }
   ];
 
   const drawer = (
@@ -129,7 +145,7 @@ export default function Navbar({
                 <div key={cat.id} className="pt-2">
                   <div className="flex items-center justify-between py-1">
                     <Link
-                      to={`/category/${cat.slug}`}
+                      to={shopCategoryUrl(cat)}
                       onClick={() => setMobileMenuOpen(false)}
                       className="text-sm font-semibold text-gray-800 uppercase tracking-wide"
                     >
@@ -159,7 +175,7 @@ export default function Navbar({
                           <div key={sub.id}>
                             <div className="flex items-center justify-between py-1">
                               <Link
-                                to={`/category/${cat.slug}/${sub.slug}`}
+                                to={shopCategoryUrl(cat, sub)}
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="text-sm font-medium text-gray-700"
                               >
@@ -184,7 +200,7 @@ export default function Navbar({
                                 {hasChild && sub.child_categories.map((child) => (
                                   <Link
                                     key={child.id}
-                                    to={`/category/${cat.slug}/${sub.slug}/${child.slug}`}
+                                    to={shopCategoryUrl(cat, sub, child)}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="block py-1 text-xs font-medium text-gray-500 hover:text-[#db2777]"
                                   >
@@ -339,11 +355,11 @@ export default function Navbar({
                   return (
                     <Link
                       key={cat.id}
-                      to={`/category/${cat.slug}`}
+                      to={shopCategoryUrl(cat)}
                       onClick={() => { setSelectedCategory(cat.slug); setHoveredCat(null); }}
                       onMouseEnter={() => setHoveredCat(hasSub ? cat : null)}
                       className={`relative flex shrink-0 items-center gap-[5px] whitespace-nowrap text-[16px] font-medium tracking-wide px-2 py-2 transition-colors duration-200 after:absolute after:left-2 after:right-2 after:bottom-0 after:h-[3px] after:rounded-full after:bg-linear-to-r after:from-[#db2777] after:to-rose-400 after:origin-left after:transition-transform after:duration-300 ${
-                        selectedCategory === cat.slug || isHovered
+                        isActivePath(cat.slug) || isHovered
                           ? 'text-[#db2777] after:scale-x-100'
                           : 'text-gray-900 hover:text-[#db2777] after:scale-x-0 hover:after:scale-x-100'
                       }`}
@@ -362,28 +378,32 @@ export default function Navbar({
                   <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-6 gap-8">
                     {hoveredCat.sub_categories.map((sub) => {
                       const hasChild = sub.child_categories && sub.child_categories.length > 0;
+                      const isSubActive = isActivePath(hoveredCat.slug, sub.slug);
                       return (
                         <div key={sub.id} className="break-inside-avoid-column mb-6">
                           <Link
-                            to={`/category/${hoveredCat.slug}/${sub.slug}`}
+                            to={shopCategoryUrl(hoveredCat, sub)}
                             onClick={() => { setSelectedCategory(hoveredCat.slug); setHoveredCat(null); }}
-                            className="block text-sm font-bold uppercase text-gray-900 hover:text-[#db2777] mb-2 tracking-wide transition-colors"
+                            className={`block text-sm font-bold uppercase hover:text-[#db2777] mb-2 tracking-wide transition-colors ${isSubActive ? 'text-[#db2777]' : 'text-gray-900'}`}
                           >
                             {sub.name}
                           </Link>
                           {hasChild && (
                             <ul className="space-y-1.5">
-                              {sub.child_categories.map((child) => (
-                                <li key={child.id}>
-                                  <Link
-                                    to={`/category/${hoveredCat.slug}/${sub.slug}/${child.slug}`}
-                                    onClick={() => { setSelectedCategory(hoveredCat.slug); setHoveredCat(null); }}
-                                    className="block text-[13px] font-medium text-gray-600 hover:text-[#db2777] hover:translate-x-0.5 transition-all"
-                                  >
-                                    {child.name}
-                                  </Link>
-                                </li>
-                              ))}
+                              {sub.child_categories.map((child) => {
+                                const isChildActive = isActivePath(hoveredCat.slug, sub.slug, child.slug);
+                                return (
+                                  <li key={child.id}>
+                                    <Link
+                                      to={shopCategoryUrl(hoveredCat, sub, child)}
+                                      onClick={() => { setSelectedCategory(hoveredCat.slug); setHoveredCat(null); }}
+                                      className={`block text-[13px] font-medium hover:text-[#db2777] hover:translate-x-0.5 transition-all ${isChildActive ? 'text-[#db2777] font-semibold' : 'text-gray-600'}`}
+                                    >
+                                      {child.name}
+                                    </Link>
+                                  </li>
+                                );
+                              })}
                             </ul>
                           )}
                         </div>
@@ -402,7 +422,7 @@ export default function Navbar({
                   to={pill.path}
                   id={`promo-pill-${pill.name.toLowerCase().replace(/\s+/g, '-')}`}
                   onClick={() => { if (pill.name !== "SHOP") setSearchQuery(pill.name === "CLEARANCE SALE" ? "15% OFF" : pill.name); }}
-                  className={`text-[13px] font-bold text-white h-8 px-3 lg:px-4 rounded-full cursor-pointer transition-all duration-200 ${pill.color} tracking-wide hover:-translate-y-0.5 active:scale-95 shrink-0 uppercase inline-flex items-center justify-center whitespace-nowrap`}
+                  className={`text-[13px] font-bold text-white h-8 px-3 lg:px-4 rounded-full cursor-pointer transition-all duration-200 ${pill.color} tracking-wide active:scale-95 shrink-0 uppercase inline-flex items-center justify-center whitespace-nowrap`}
                 >
                   {pill.name}
                 </Link>
