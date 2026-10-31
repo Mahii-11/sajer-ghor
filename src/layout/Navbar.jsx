@@ -80,7 +80,7 @@ export default function Navbar({
     { name: "SHOP", color: "bg-[#0b5c63] hover:bg-[#084a50]", path: "/shop" },
     { name: "COMBO", color: "bg-[#9461f0] hover:bg-[#8049e0]", path: "/offers/combo" },
     { name: "CLEARANCE SALE", color: "bg-[#c8102e] hover:bg-[#a80d26]", path: "/offers/clearance" },
-    { name: "MEN", color: "bg-[#0e80b2] hover:bg-[#0b6a95]", path: "/category/men" }
+    { name: "FOR HIM", color: "bg-[#0e80b2] hover:bg-[#0b6a95]", path: "/category/men" }
   ];
 
   const drawer = (

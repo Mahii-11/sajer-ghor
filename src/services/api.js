@@ -44,7 +44,7 @@ export const getNavMenu = async () =>
   normalizeResponse(await fetchData("menu"), []);
 
 export const getSocialData = async () =>
-  normalizeResponse(await fetchData("social-data"), []);
+  normalizeResponse(await fetchData("social-links"), []);
 
 // settings API call handler
 // Backend sends site_name / phone / phone2 / description; map them to the keys

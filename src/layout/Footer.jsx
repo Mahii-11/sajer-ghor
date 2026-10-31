@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Facebook,
-  Instagram,
   Twitter,
   Linkedin,
   Phone,
@@ -14,6 +13,16 @@ import {
 } from 'lucide-react';
 import { FaYoutube } from 'react-icons/fa';
 import { getSocialData, getSiteSettings } from '../services/api';
+
+// Outline Instagram glyph that fills white on hover (needs a `group` parent),
+// with the lens and dot cut out in the brand pink to match the solid Facebook icon.
+const InstagramIcon = ({ className }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" className="stroke-current fill-transparent group-hover:fill-white transition-colors duration-300" />
+    <circle cx="12" cy="12" r="4" className="stroke-current group-hover:stroke-[#db2777] transition-colors duration-300" />
+    <circle cx="17.5" cy="6.5" r="1" className="fill-current stroke-none group-hover:fill-[#db2777] transition-colors duration-300" />
+  </svg>
+);
 
 export default function Footer() {
   const [social, setSocial] = useState([]);
@@ -61,7 +70,7 @@ export default function Footer() {
   ).toLowerCase();
 
   if (str.includes('facebook') || str.includes('fb')) return <Facebook className="w-4 h-4 fill-current" />;
-  if (str.includes('instagram') || str.includes('insta')) return <Instagram className="w-4 h-4 fill-current" />;
+  if (str.includes('instagram') || str.includes('insta')) return <InstagramIcon className="w-4 h-4" />;
   if (str.includes('twitter') || str.includes('x')) return <Twitter className="w-4 h-4 fill-current" />;
   if (str.includes('youtube') || str.includes('yt')) return <FaYoutube className="w-4 h-4" />;
   if (str.includes('linkedin')) return <Linkedin className="w-4 h-4 fill-current" />;
@@ -122,7 +131,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   title={item?.name || 'Social Link'}
-                  className="w-8 h-8 rounded-full bg-white border border-pink-200 hover:bg-[#db2777] hover:border-[#db2777] hover:text-white text-[#db2777] flex items-center justify-center transition-all duration-300 shadow-sm cursor-pointer"
+                  className="group w-8 h-8 rounded-full bg-white border border-pink-200 hover:bg-[#db2777] hover:border-[#db2777] hover:text-white text-[#db2777] flex items-center justify-center transition-all duration-300 shadow-sm cursor-pointer"
                 >
                   {renderSocialIcon(item)}
                 </a>
