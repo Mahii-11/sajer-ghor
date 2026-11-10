@@ -4,31 +4,31 @@ import { Link } from "react-router-dom";
 const promos = [
   {
     id: "feedback",
-    ratio: 1916 / 821,
+    ratio: 1920 / 820,
     image: "/images/Customer Feedback Banner.png",
     alt: "Customer Feedback & Suggestion",
     to: "#",
   },
   {
     id: "vendor",
-    ratio: 1919 / 820,
+    ratio: 1920 / 820,
     image: "/images/Grow Together Vendor Onboarding.png",
     alt: "Vendor Onboarding",
     to: "#",
   },
   {
-    id: "skincare-app",
-    ratio: 2170 / 725,
-    image: "/images/AI Skincare App Beauty Banner.png",
-    alt: "Beauty Measure & Skincare Suggestion",
-    to: "/shop",
+    id: "feedback-preview",
+    ratio: 1920 / 820,
+    image: "/images/Customer Feedback Banner.png",
+    alt: "Customer Feedback & Suggestion",
+    to: "#",
   },
   {
-    id: "burka",
-    ratio: 2170 / 725,
-    image: "/images/Elegant Burka Collection Banner.png",
-    alt: "Burka Collection",
-    to: "/shop",
+    id: "vendor-preview",
+    ratio: 1920 / 820,
+    image: "/images/Grow Together Vendor Onboarding.png",
+    alt: "Vendor Onboarding",
+    to: "#",
   },
 ];
 

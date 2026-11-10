@@ -13,7 +13,8 @@ import PromoStrip from "../components/PromoStrip";
 export default function HomePage() {
   return (
       <div>
-       <PromoStrip />
+       {/* TODO: PromoStrip (Feedback / Vendor Onboarding) hidden for now, will work on it later */}
+       {/* <PromoStrip /> */}
        <section id="hero-banner-section" className="w-full">
          <HeroBanner />
       </section>

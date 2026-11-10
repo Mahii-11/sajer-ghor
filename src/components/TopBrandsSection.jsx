@@ -29,7 +29,7 @@ export default function TopBrandsSection() {
   if (loading) return <TopBrandsSkeleton />
 
   return (
-    <section id="top-brands-section">
+    <section id="top-brands-section" className="-mt-4 md:-mt-5">
       <div>
         <SectionTitle title="Best Brands, Best Deals"  />
                     
@@ -43,7 +43,7 @@ export default function TopBrandsSection() {
               <img
                 src={brand.banner_image}
                 alt={brand.name}
-                className="w-full h-auto aspect-square md:aspect-video object-cover transition-transform duration-500 group-hover:scale-105"
+                className="w-full h-auto block transition-transform duration-500 group-hover:scale-105"
                 referrerPolicy="no-referrer"
               />
             </Link>

@@ -131,7 +131,7 @@ export default function Navbar({
               placeholder={searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-4 pr-10 py-2 rounded-full border border-pink-200 bg-pink-50/50 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm placeholder:text-sm placeholder:font-medium"
+              className="w-full pl-4 pr-10 py-3 rounded-full border border-pink-200 bg-pink-50/50 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm placeholder:text-sm placeholder:font-medium"
             />
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
@@ -294,7 +294,7 @@ export default function Navbar({
                 placeholder={searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-8 pl-11 pr-5 rounded-full bg-gray-50 border-2 border-[#db2777]/80 text-[13px] font-medium text-gray-900 placeholder:text-gray-400 placeholder:font-medium focus:outline-none focus:border-[#db2777] focus:ring-4 focus:ring-pink-100 transition-all duration-200"
+                className="w-full h-10 pl-11 pr-5 rounded-full bg-gray-50 border-2 border-[#db2777]/80 text-[13px] font-medium text-gray-900 placeholder:text-gray-400 placeholder:font-medium focus:outline-none focus:border-[#db2777] focus:ring-4 focus:ring-pink-100 transition-all duration-200"
               />
               <button id="header-search-submit" type="submit" className="sr-only">Search</button>
             </div>
