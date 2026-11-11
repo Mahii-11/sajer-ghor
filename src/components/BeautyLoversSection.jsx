@@ -13,8 +13,7 @@ const formatTestimonial = (item, index) => {
   return {
     id: item.id ?? index,
     name: item.name ?? '',
-    // Static for now; replace with the API field (e.g. item.designation) once available
-    designation: 'Designation',
+    designation: item.designation ?? '',
     avatarImg: item.image ?? item.avatarImg ?? '',
     rating: Number.isFinite(Number(item.rating)) ? Number(item.rating) : 5,
     review: item.review ?? '',
@@ -29,7 +28,7 @@ const formatTestimonial = (item, index) => {
 // Single Card Component (Accepts item props)
 const TestimonialCard = ({ item }) => {
   return (
-    <div className="relative pt-16 w-full max-w-[320px]">
+    <div className="relative pt-16 w-full max-w-[320px] h-full flex flex-col">
       {/* Top Profile Avatar */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full border border-pink-300  z-10 overflow-hidden flex items-center justify-center">
         {item.avatarImg ? (
@@ -43,7 +42,7 @@ const TestimonialCard = ({ item }) => {
       </div>
 
       {/* Card Content Box */}
-      <div className="rounded-[24px] border border-pink-300 pt-20 pb-6 px-6 text-center shadow-sm flex flex-col justify-between min-h-[360px]">
+      <div className="rounded-[24px] border border-pink-300 pt-20 pb-6 px-6 text-center shadow-sm flex flex-col justify-between flex-1 min-h-[360px]">
         <div>
           {/* User Name */}
           <h3 className="font-bold text-[#222222] text-lg tracking-wide">
@@ -77,13 +76,16 @@ const TestimonialCard = ({ item }) => {
           </div>
 
           {/* Review Text */}
-          <p className="text-[#4A4A4A] text-[15px] leading-relaxed font-normal">
+          <p
+            className="text-[#4A4A4A] text-[15px] leading-relaxed font-normal line-clamp-4 min-h-[6rem]"
+            title={item.review}
+          >
             {item.review}
           </p>
         </div>
 
         {/* Product Footer */}
-        <div className="mt-6 pt-4 border-t border-gray-200 flex items-center justify-between">
+        <div className="mt-6 pt-4 border-t border-gray-200 flex items-center justify-between gap-3 min-h-[4.5rem]">
           {item.productImg && (
             <div className="w-10 h-12 bg-amber-100 rounded border border-gray-200 flex-shrink-0 flex items-center justify-center overflow-hidden">
               <img
@@ -95,8 +97,11 @@ const TestimonialCard = ({ item }) => {
             </div>
           )}
 
-          <div className="text-right">
-            <p className="text-[12px] font-semibold text-[#555555]">
+          <div className="text-right ml-auto">
+            <p
+              className="text-[12px] font-semibold text-[#555555] line-clamp-2"
+              title={item.productText}
+            >
               {item.productText}
             </p>
             <a
@@ -310,7 +315,7 @@ export default function BeautyLoversSection() {
         <div className="overflow-hidden py-4">
           <motion.div
             ref={trackRef}
-            className="flex gap-6 cursor-grab active:cursor-grabbing select-none"
+            className="flex items-stretch gap-6 cursor-grab active:cursor-grabbing select-none"
             style={{ x, willChange: 'transform' }}
             drag="x"
             dragMomentum={false}
@@ -323,7 +328,7 @@ export default function BeautyLoversSection() {
               <div
                 key={_key}
                 ref={_isMeasureTarget ? firstCardRef : null}
-                className="flex-shrink-0 w-[300px] sm:w-[320px]"
+                className="flex-shrink-0 w-[300px] sm:w-[320px] flex"
               >
                 <TestimonialCard item={item} />
               </div>

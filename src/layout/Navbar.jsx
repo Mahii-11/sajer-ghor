@@ -96,7 +96,7 @@ export default function Navbar({
     { name: "SHOP", color: "bg-[#0b5c63]", path: "/shop" },
     { name: "COMBO", color: "bg-[#9461f0]", path: "/offers/combo" },
     { name: "CLEARANCE SALE", color: "bg-[#c8102e]", path: "/offers/clearance" },
-    { name: "FOR HIM", color: "bg-[#0e80b2]", path: "/category/men" }
+    { name: "FOR HIM", color: "bg-[#1d4ed8]", path: "/category/men" }
   ];
 
   const drawer = (
@@ -326,7 +326,7 @@ export default function Navbar({
               className="flex items-center justify-center gap-2 bg-[#db2777] hover:bg-[#be185d] text-white text-[13px] font-bold uppercase tracking-wide h-8 px-3 sm:px-4 rounded-full cursor-pointer transition-all duration-200 hover:-translate-y-0.5 active:scale-95"
             >
               <FaCartPlus className="w-4 h-4" />
-              <span className="hidden sm:inline">Bag</span>
+              <span className="hidden sm:inline">Cart</span>
               {totalQuantity > 0 && (
                 <span className="bg-white text-[#db2777] text-[11px] font-black rounded-full min-w-5 h-5 px-1 flex items-center justify-center">
                   {totalQuantity}

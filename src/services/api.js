@@ -102,8 +102,14 @@ export const getTopBrands = async () =>
 
 
 
-export const getTopRankedProduct = async () => 
-  normalizeResponse(await fetchData("top-ranked-products"), []);
+// Returns { banner, products } — the section banner image now comes from the API
+export const getTopRankedProduct = async () => {
+  const res = await fetchData("top-ranked-products");
+  return {
+    banner: res?.banner ?? null,
+    products: normalizeResponse(res, []),
+  };
+};
 
 // Full list for the "Top Ranking Products" page (the banner links there)
 export const getAllTopRankedProducts = async () =>
@@ -113,8 +119,14 @@ export const getAllTopRankedProducts = async () =>
 export const getAllRecommendedProducts = async () =>
   normalizeResponse(await fetchData("all-recommended-products"), []);
 
-export const getRecommendProduct = async () =>
-  normalizeResponse(await fetchData("recommended-products"), []);
+// Returns { banner, products } — the section banner image now comes from the API
+export const getRecommendProduct = async () => {
+  const res = await fetchData("recommended-products");
+  return {
+    banner: res?.banner ?? null,
+    products: normalizeResponse(res, []),
+  };
+};
 
 export const getWhyShopWithUs = async () => 
   normalizeResponse(await fetchData("why-shop-data"), []);
