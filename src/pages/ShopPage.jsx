@@ -469,17 +469,17 @@ function ProductCard({ product }) {
           <div className="flex items-center justify-center gap-2">
             {isVar && price_min ? (
               <span className="text-[#E61C5C] font-extrabold text-sm sm:text-base">
-                ৳{price_min} {price_max && price_max !== price_min ? `- ৳${price_max}` : ""}
+                <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{price_min} {price_max && price_max !== price_min ? <>- <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{price_max}</> : ""}
               </span>
             ) : (
               <>
                 {discountPercent && (
                   <span className="text-gray-400 line-through text-xs font-semibold">
-                    ৳{oldPrice}
+                    <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{oldPrice}
                   </span>
                 )}
                 <span className="text-[#E61C5C] font-extrabold text-base sm:text-lg">
-                  ৳{currentPrice}
+                  <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{currentPrice}
                 </span>
               </>
             )}

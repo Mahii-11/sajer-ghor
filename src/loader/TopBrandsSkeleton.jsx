@@ -8,7 +8,7 @@ export default function TopBrandsSkeleton() {
     <section id="top-brands-section" className="animate-pulse">
       <div>
         {/* Section Title Skeleton */}
-        <div className="flex flex-col items-center justify-center mb-8 md:mb-10">
+        <div className="flex flex-col items-center justify-center mb-6 md:mb-8">
           <div className="h-7 w-64 bg-gray-200 rounded-md" />
           <div className="h-1 w-12 bg-gray-200 rounded-full mt-3" />
         </div>

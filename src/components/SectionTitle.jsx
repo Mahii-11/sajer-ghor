@@ -6,9 +6,10 @@ const SIZES = {
 };
 
 // `size`: "md" (default) or "lg" for the bigger home page headings
-export default function SectionTitle({ title, subtitle, size = 'md' }) {
+// `className`: override the default bottom spacing (e.g. "mb-6 md:mb-8")
+export default function SectionTitle({ title, subtitle, size = 'md', className = 'mb-8 md:mb-10' }) {
   return (
-    <div className="text-center mb-8 md:mb-10" id={`section-title-${title.toLowerCase().replace(/\s+/g, '-')}`}>
+    <div className={`text-center ${className}`} id={`section-title-${title.toLowerCase().replace(/\s+/g, '-')}`}>
       {subtitle && (
         <span className="text-[#db2777] text-xs font-semibold tracking-widest uppercase block mb-2">
           {subtitle}
