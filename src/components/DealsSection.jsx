@@ -28,7 +28,7 @@ export default function DealsSection() {
   return (
     <section id="deals-section">
       <div>
-        <SectionTitle title="Glow More, Pay Less"  />
+        <SectionTitle title="Glow More, Pay Less" size="lg" />
 
         {/* Loading State Skeleton */}
         {loading ? (

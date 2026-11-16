@@ -8,7 +8,12 @@ import BrandProductsPage from "./pages/BrandProductsPage";
 import CampaignProductsPage from "./pages/CampaignProductsPage";
 import ShowcaseProductsPage from "./pages/ShowcaseProductsPage";
 import SectionProductsPage from "./pages/SectionProductsPage";
-import { getAllTopRankedProducts, getAllRecommendedProducts } from "./services/api";
+import {
+  getAllTopRankedProducts,
+  getAllRecommendedProducts,
+  getTopRankedProduct,
+  getRecommendProduct,
+} from "./services/api";
 
 
 const router = createBrowserRouter([
@@ -48,12 +53,25 @@ const router = createBrowserRouter([
 
       {
         path: "/top-ranking-products",
-        element: <SectionProductsPage title="TOP RANKING PRODUCTS" fetchProducts={getAllTopRankedProducts} />
+        element: (
+          <SectionProductsPage
+            title="TOP RANKING PRODUCTS"
+            fetchProducts={getAllTopRankedProducts}
+            fetchBanner={getTopRankedProduct}
+            banner="/images/top-ranking-banner.jpg"
+          />
+        )
       },
 
       {
         path: "/recommended-products",
-        element: <SectionProductsPage title="RECOMMENDED PRODUCTS" fetchProducts={getAllRecommendedProducts} />
+        element: (
+          <SectionProductsPage
+            title="RECOMMENDED PRODUCTS"
+            fetchProducts={getAllRecommendedProducts}
+            fetchBanner={getRecommendProduct}
+          />
+        )
       },
 
       {

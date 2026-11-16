@@ -37,7 +37,6 @@ export default function ShowcaseProductsPage() {
         </span>
         <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-wide relative inline-block">
           {loading ? 'Loading...' : (showcase?.showcase_title || 'Products')}
-          <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#db2777] rounded-full"></span>
         </h1>
       </div>
 

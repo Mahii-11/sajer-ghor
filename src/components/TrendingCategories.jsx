@@ -60,10 +60,10 @@ export default function TrendingCategories() {
 
                 {/* Details */}
                 <div className="absolute bottom-4 left-4 right-4 z-20 text-left">
-                  <h3 className="text-white text-base font-bold uppercase tracking-tight leading-tight group-hover:text-pink-300 transition-colors">
+                  <h3 className="text-white text-base font-bold uppercase tracking-wider leading-tight group-hover:text-pink-300 transition-colors">
                     {cat.name}
                   </h3>
-                  <span className="text-[10px] text-pink-200 font-bold block mt-0.5">
+                  <span className="text-[10px] text-pink-200 font-bold tracking-wide block mt-0.5">
                     {cat.products_count ?? 0} Products
                   </span>
                 </div>

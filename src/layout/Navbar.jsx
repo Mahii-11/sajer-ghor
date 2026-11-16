@@ -415,14 +415,15 @@ export default function Navbar({
             )}
 
             {/* Promotional Pills */}
-            <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar shrink-0 max-w-full md:ml-auto">
+            {/* py-1 + -my-1 gives the hover lift room without clipping (overflow-x-auto also clips vertically) */}
+            <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar shrink-0 max-w-full md:ml-auto py-1 -my-1 px-1 -mx-1">
               {promoPills.map((pill) => (
                 <Link
                   key={pill.name}
                   to={pill.path}
                   id={`promo-pill-${pill.name.toLowerCase().replace(/\s+/g, '-')}`}
                   onClick={() => { if (pill.name !== "SHOP") setSearchQuery(pill.name === "CLEARANCE SALE" ? "15% OFF" : pill.name); }}
-                  className={`text-[13px] font-bold text-white h-8 px-3 lg:px-4 rounded-full cursor-pointer transition-all duration-200 ${pill.color} tracking-wide active:scale-95 shrink-0 uppercase inline-flex items-center justify-center whitespace-nowrap`}
+                  className={`text-[13px] font-bold text-white h-8 px-3 lg:px-4 rounded-full cursor-pointer transition-all duration-200 ${pill.color} tracking-wide hover:-translate-y-0.5 hover:brightness-90 hover:shadow-md active:scale-95 shrink-0 uppercase inline-flex items-center justify-center whitespace-nowrap`}
                 >
                   {pill.name}
                 </Link>

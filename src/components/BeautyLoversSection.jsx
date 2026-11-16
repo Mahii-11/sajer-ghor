@@ -302,8 +302,8 @@ export default function BeautyLoversSection() {
   return (
     <section className="px-4 flex flex-col items-center">
       {/* Heading */}
-      <h2 className="text-lg md:text-xl font-bold text-[#333333] mb-8 md:mb-10 tracking-wide">
-        BeautyLovers Speak
+      <h2 className="text-lg md:text-xl font-bold text-[#333333] mb-8 md:mb-10 tracking-wide uppercase">
+        #BeautyLoversSpeak
       </h2>
 
       {/* Sliding Track */}

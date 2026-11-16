@@ -1,6 +1,12 @@
 import React from 'react';
 
-export default function SectionTitle({ title, subtitle }) {
+const SIZES = {
+  md: 'text-lg md:text-xl',
+  lg: 'text-xl md:text-2xl',
+};
+
+// `size`: "md" (default) or "lg" for the bigger home page headings
+export default function SectionTitle({ title, subtitle, size = 'md' }) {
   return (
     <div className="text-center mb-8 md:mb-10" id={`section-title-${title.toLowerCase().replace(/\s+/g, '-')}`}>
       {subtitle && (
@@ -8,9 +14,8 @@ export default function SectionTitle({ title, subtitle }) {
           {subtitle}
         </span>
       )}
-      <h2 className="text-lg md:text-xl font-bold text-gray-900 tracking-wide relative inline-block">
+      <h2 className={`${SIZES[size] || SIZES.md} font-bold text-gray-900 tracking-wide uppercase`}>
         {title}
-        <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#db2777] rounded-full"></span>
       </h2>
     </div>
   );
