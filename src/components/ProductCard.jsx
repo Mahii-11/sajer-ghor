@@ -114,7 +114,7 @@ export default function ProductCard({ product }) {
     <div 
       id={`product-card-${id}`}
       onClick={() => navigate(`/product-details/${slug}`)}
-      className="relative bg-white border border-gray-200 rounded-2xl sm:rounded-[22px] overflow-hidden flex flex-col justify-between w-full shadow-[0_4px_16px_rgba(230,28,92,0.10)] hover:shadow-[0_8px_24px_rgba(230,28,92,0.18)] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+      className="relative bg-white border border-gray-200 rounded-2xl sm:rounded-[22px] overflow-hidden flex flex-col justify-between w-full h-full shadow-[0_4px_16px_rgba(230,28,92,0.10)] hover:shadow-[0_8px_24px_rgba(230,28,92,0.18)] active:scale-[0.98] transition-all duration-200 cursor-pointer"
     >
       {/* Discount Badge on Top Left */}
       {discountPercent && (
@@ -136,19 +136,17 @@ export default function ProductCard({ product }) {
       <div className="p-3 sm:p-4 flex flex-col flex-grow justify-between text-center">
         <div className="flex flex-col gap-2 sm:gap-4">
           {/* Brand Name */}
-          {displayBrand && (
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider truncate">
-              {displayBrand}
-            </p>
-          )}
+          <p className="text-xs h-4 leading-4 font-semibold text-gray-500 uppercase tracking-wider truncate">
+            {displayBrand || ' '}
+          </p>
 
-          {/* Product Title */}
-          <h3 className="text-gray-900 text-sm font-medium line-clamp-2 min-h-10 leading-snug">
+          {/* Product Title (always reserves 2 lines) */}
+          <h3 className="text-gray-900 text-sm font-medium line-clamp-2 h-10 leading-5 overflow-hidden">
             {typeof name === 'string' ? name : ''}
           </h3>
 
           {/* Price Section */}
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-3 h-7">
             {isVariable && resolvedMinPrice != null ? (
               <span className="text-[#E61C5C] font-bold text-base sm:text-lg">
                 <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{resolvedMinPrice} {resolvedMaxPrice && resolvedMaxPrice !== resolvedMinPrice ? <>- <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{resolvedMaxPrice}</> : ''}
@@ -197,17 +195,17 @@ export default function ProductCard({ product }) {
           </div>
 
           {/* Size / Weight */}
-          {size && (
-            <div className='mt-0.5 sm:mt-1.5'>
-              <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full inline-block">
+          <div className="h-5 flex items-center justify-center">
+            {size && (
+              <span className="text-xs leading-4 font-medium text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full inline-block">
                 {size}
               </span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-2 w-full pt-3 sm:pt-6">
+        <div className="grid grid-cols-2 gap-2 w-full mt-auto pt-3 sm:pt-4">
           <button
             type="button"
             onClick={handleAddToCart}

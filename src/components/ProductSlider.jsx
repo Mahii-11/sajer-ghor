@@ -22,7 +22,7 @@ export const formatSectionProduct = (item) => ({
   unit_type: item.unit_type,
 });
 
-const getPerView = (width) => (width >= 768 ? 4 : width >= 640 ? 3 : 2);
+const getPerView = (width) => (width >= 900 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2);
 
 export function SliderHeader({ title, viewAllTo, className = '' }) {
   return (
@@ -143,7 +143,7 @@ export default function ProductSlider({ title, products, viewAllTo, direction = 
               }}
             >
               {items.map((item, i) => (
-                <div key={`${item.id}-${i}`} className="shrink-0" style={{ width: cardWidth }}>
+                <div key={`${item.id}-${i}`} className="shrink-0 flex" style={{ width: cardWidth }}>
                   <ProductCard product={formatSectionProduct(item)} />
                 </div>
               ))}

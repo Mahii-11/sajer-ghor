@@ -433,7 +433,7 @@ function ProductCard({ product }) {
   return (
     <div
       onClick={handleCardClick}
-      className="relative bg-white border border-gray-200 rounded-[22px] overflow-hidden flex flex-col justify-between w-full shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+      className="relative bg-white border border-gray-200 rounded-[22px] overflow-hidden flex flex-col justify-between w-full h-full shadow-sm hover:shadow-md transition-shadow cursor-pointer"
     >
       {/* Discount Badge on Top Left */}
       {discountPercent && (
@@ -455,19 +455,17 @@ function ProductCard({ product }) {
       <div className="p-3.5 sm:p-4 flex flex-col flex-grow justify-between text-center">
         <div className="flex flex-col gap-1.5">
           {/* Brand Name */}
-          {displayBrand && (
-            <p className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider truncate">
-              {displayBrand}
-            </p>
-          )}
+          <p className="text-[11px] sm:text-xs h-4 leading-4 font-bold text-gray-400 uppercase tracking-wider truncate">
+            {displayBrand || ' '}
+          </p>
 
-          {/* Product Title */}
-          <h3 className="text-gray-900 text-xs font-normal line-clamp-2 min-h-[32px] sm:min-h-[36px] leading-snug">
+          {/* Product Title (always reserves 2 lines) */}
+          <h3 className="text-gray-900 text-xs font-normal line-clamp-2 h-8 leading-4 overflow-hidden">
             {typeof name === "string" ? name : ""}
           </h3>
 
           {/* Price Section */}
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-2 h-7">
             {isVar && price_min ? (
               <span className="text-[#E61C5C] font-extrabold text-sm sm:text-base">
                 <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{price_min} {price_max && price_max !== price_min ? <>- <span className="text-[1.3em] mr-0.5 leading-none font-semibold">৳</span>{price_max}</> : ""}
@@ -516,17 +514,17 @@ function ProductCard({ product }) {
           </div>
 
           {/* Size / Weight (from API unit + unit_type) */}
-          {formatUnit(product?.unit, product?.unit_type) && (
-            <div>
-              <span className="text-[10px] sm:text-[11px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full inline-block">
+          <div className="h-5 flex items-center justify-center">
+            {formatUnit(product?.unit, product?.unit_type) && (
+              <span className="text-[10px] sm:text-[11px] leading-4 font-semibold text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full inline-block">
                 {formatUnit(product?.unit, product?.unit_type)}
               </span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-2 w-full pt-3">
+        <div className="grid grid-cols-2 gap-2 w-full mt-auto pt-3">
           <button
             type="button"
             onClick={handleAddToCart}
@@ -687,7 +685,7 @@ export default function ShopPage({
             </div>
           ) : (
             <div
-              className={`grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 transition-opacity ${
+              className={`grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4 transition-opacity ${
                 fetching ? "opacity-50 pointer-events-none" : ""
               }`}
             >
