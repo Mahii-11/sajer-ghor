@@ -59,18 +59,26 @@ export default function AccountSettings({ user, setUser }) {
     setIsSaving(true);
 
     try {
-      const form = new FormData();
+      // The backend's unique-phone rule does not ignore the user's own number, so
+      // an unchanged phone is rejected ("The phone has already been taken") and
+      // nothing gets saved. Only send the phone when it was actually edited.
+      const build = (withPhone) => {
+        const form = new FormData();
+        form.append("name", formData.name);
+        form.append("email", formData.email);
+        if (withPhone) form.append("phone", formData.phone);
+        form.append("address", formData.address);
+        if (imageFile) form.append("image", imageFile);
+        return form;
+      };
 
-      form.append("name", formData.name);
-      form.append("email", formData.email);
-      form.append("phone", formData.phone);
-      form.append("address", formData.address);
+      const phoneChanged = formData.phone !== (user?.phone || "");
+      let res = await updateUserProfile(build(phoneChanged));
 
-      if (imageFile) {
-        form.append("image", imageFile);
+      // Backend insists on a phone: retry with it included
+      if (res?.errors?.phone && !phoneChanged && !/taken/i.test(String(res.errors.phone))) {
+        res = await updateUserProfile(build(true));
       }
-
-      const res = await updateUserProfile(form);
 
       const failed = !res || res.status === false || res.success === false;
       if (failed) {

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import { motion, useMotionValue, useAnimationFrame, animate } from 'motion/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import SectionTitle from './SectionTitle';
 
 // আপনার প্রজেক্টের API helper (যেমন: api.js) থেকে ইম্পোর্ট করুন
@@ -185,6 +186,15 @@ export default function TopBrands() {
       <div>
         {/* Section Heading */}
         <SectionTitle title="TOP BRANDS" />
+        <div className="flex justify-end px-5 -mt-4 mb-4">
+          <Link
+            to="/brands"
+            className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[#db2777] hover:text-black transition-colors"
+          >
+            View All
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
+        </div>
 
         {/* Auto-Sliding Brand Logos */}
         <div className="w-full px-5">

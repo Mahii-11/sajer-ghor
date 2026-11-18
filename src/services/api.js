@@ -269,10 +269,13 @@ export const submitProductReview = async (slug, { name, phone, rating, review })
 
 export async function createOrder(orderData) {
   try {
+    // Send the login token (when logged in) so the backend links the order to the user
+    const token = localStorage.getItem("token") || localStorage.getItem("userToken");
     const response = await fetch(`${BASE_URL}checkout`, {
       method: "POST",
       headers: {
         Accept: "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: orderData,
     });
@@ -391,7 +394,17 @@ export const getUserOrders = async () => {
   }
 };
 
-export const getSingleOrder = async (id) => {
+// Product name of an order row. The order APIs use different keys
+// (order_products[].product_name vs products[].name), so accept all of them.
+export const getOrderProductName = (order) => {
+  const list = order?.order_products || order?.products || order?.items || order?.order_items || [];
+  const first = list[0];
+  const name = first?.product_name || first?.name || first?.product?.name || order?.product_name;
+  if (!name) return "No Product Found";
+  return list.length > 1 ? `${name} +${list.length - 1} more` : name;
+};
+
+export const getSingleOrder =async (id) => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.get(`${BASE_URL}order-details/${id}`, {
@@ -425,18 +438,27 @@ export const trackOrderApi = async (orderId, phone) => {
 // Password change uses the same update-user-profile endpoint (password + password_confirmation).
 // The current name/email/phone/address are re-sent so the backend's profile validation still passes.
 export const changePasswordApi = async (password, passwordConfirmation) => {
-  const formData = new FormData();
-
   const profile = await getUserProfile();
   const u = profile?.user;
-  if (u) {
-    ["name", "email", "phone", "address"].forEach((key) => {
-      if (u[key]) formData.append(key, u[key]);
-    });
+
+  const build = (fields) => {
+    const formData = new FormData();
+    if (u) {
+      fields.forEach((key) => {
+        if (u[key]) formData.append(key, u[key]);
+      });
+    }
+    formData.append("password", password);
+    formData.append("password_confirmation", passwordConfirmation);
+    return formData;
+  };
+
+  // The backend's unique-phone rule does not ignore the user's own number, so
+  // re-sending the unchanged phone fails with "The phone has already been taken".
+  // Try without it first; only add it back if the backend says it is required.
+  const res = await updateUserProfile(build(["name", "email", "address"]));
+  if (!res?.status && res?.errors?.phone && !/taken/i.test(String(res.errors.phone))) {
+    return await updateUserProfile(build(["name", "email", "phone", "address"]));
   }
-
-  formData.append("password", password);
-  formData.append("password_confirmation", passwordConfirmation);
-
-  return await updateUserProfile(formData);
+  return res;
 };

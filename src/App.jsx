@@ -5,6 +5,7 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ShopContainer from "./pages/ShopContainer";
 import CheckoutPage from "./pages/CheckoutPage";
 import BrandProductsPage from "./pages/BrandProductsPage";
+import AllBrandsPage from "./pages/AllBrandsPage";
 import CampaignProductsPage from "./pages/CampaignProductsPage";
 import ShowcaseProductsPage from "./pages/ShowcaseProductsPage";
 import ThankYouPage from "./pages/ThankYouPage";
@@ -45,6 +46,11 @@ const router = createBrowserRouter([
       {
         path: "/brand/:slug",
         element: <BrandProductsPage />
+      },
+
+      {
+        path: "/brands",
+        element: <AllBrandsPage />
       },
 
       {

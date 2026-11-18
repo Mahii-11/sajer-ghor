@@ -8,7 +8,7 @@
   Settings,
   LifeBuoy,
 } from "lucide-react";
-import { getUserOrders } from "../../services/api";
+import { getUserOrders, getOrderProductName } from "../../services/api";
 import { useEffect, useState } from "react";
 import OrdersSkeleton from "./OrdersSkeleton";
 
@@ -29,11 +29,9 @@ export default function Overview({ user, setActiveTab }) {
         if (Array.isArray(list)) {
           const formattedOrders = list.map((item) => ({
             id: `#ORD-${item.order_id}`,
-            product:
-              item.order_products?.[0]?.product_name ||
-              "No Product Found",
+            product: getOrderProductName(item),
             status: getOrderStatus(item.order_status),
-            date: formatDate(item.created_at),
+            date: formatDate(item.created_at || item.order_date || item.date),
             amount: `৳${Number(item.total_amount).toLocaleString()}`,
           }));
 
