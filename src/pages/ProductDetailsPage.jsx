@@ -453,7 +453,7 @@ const ProductDetailsPage = () => {
   return (
     <div className="bg-white font-sans text-gray-800 relative">
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <main className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6">
         {/* Breadcrumb */}
         <nav className="text-xs text-gray-500 mb-6 flex items-center gap-1.5 flex-wrap">
           <Link to="/" className="hover:text-pink-600 transition-colors">Home</Link>

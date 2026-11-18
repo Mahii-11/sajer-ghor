@@ -304,7 +304,7 @@ export default function Navbar({
       <div className="h-[3px] w-full bg-linear-to-r from-pink-500 via-fuchsia-500 to-rose-400" />
 
       {/* Row 1: logo, search, actions */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex items-center justify-between gap-3 md:gap-6 lg:gap-8 py-2.5 md:py-3">
           <button
             id="mobile-menu-toggle"
@@ -407,7 +407,7 @@ export default function Navbar({
       {/* Row 2: categories + promo pills */}
       <div className="border-t border-gray-100 w-full">
         <div
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative"
+          className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative"
           onMouseLeave={() => setHoveredCat(null)}
         >
           <div className="flex items-center justify-between gap-4 py-2 md:py-2.5 w-full">

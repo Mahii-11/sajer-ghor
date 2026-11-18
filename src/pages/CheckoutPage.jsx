@@ -651,7 +651,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen py-6 sm:py-10">
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-screen-xl px-4">
         <StepIndicator currentStep={2} />
 
         <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">

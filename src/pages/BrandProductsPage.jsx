@@ -30,7 +30,7 @@ export default function BrandProductsPage() {
   }, [slug]);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+    <main className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
       <div className="text-center mb-8 md:mb-10">
         <span className="text-[#db2777] text-xs font-semibold tracking-widest uppercase block mb-2">
           Brand

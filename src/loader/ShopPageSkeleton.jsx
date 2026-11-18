@@ -5,7 +5,7 @@ import ProductCardSkeleton from "./ProductCardSkeleton";
 export default function ShopPageSkeleton() {
   return (
     <div className="min-h-screen bg-gray-50/50 py-6 animate-pulse">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:flex-row">
+      <div className="mx-auto flex max-w-screen-2xl flex-col gap-6 px-4 sm:px-6 lg:flex-row">
         
         {/* Sidebar Skeleton */}
         <aside className="w-full shrink-0 lg:w-64 space-y-6">

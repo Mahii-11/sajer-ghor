@@ -18,7 +18,7 @@ export default function HomePage() {
        <section id="hero-banner-section" className="w-full">
          <HeroBanner />
       </section>
-      <main className="grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 md:pt-8 pb-6 md:pb-10 space-y-6 md:space-y-8">
+      <main className="grow max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 md:pt-8 pb-6 md:pb-10 space-y-6 md:space-y-8">
 
         <DealsSection />
         <TopBrandsSection/>

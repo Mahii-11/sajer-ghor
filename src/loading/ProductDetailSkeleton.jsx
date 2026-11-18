@@ -4,7 +4,7 @@ import ProductCardSkeleton from '../loader/ProductCardSkeleton';
 // column (title, price, add-to-cart row, accordions, trust badges), then similar products.
 export default function ProductDetailSkeleton() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 animate-pulse">
+    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 animate-pulse">
       {/* Breadcrumb */}
       <div className="h-4 w-72 max-w-full bg-gray-200 rounded mb-6" />
 

@@ -84,7 +84,7 @@ export default function Footer() {
     <footer className="glass border-t-2 border-pink-200 text-gray-800 mt-12" id="main-footer">
       {/* Trust Badges Bar */}
       <div className="bg-white/40 backdrop-blur-md border-b-2 border-pink-200 py-7 md:py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 text-center">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 text-center">
           <div className="flex flex-col items-center p-2">
             <ShieldCheck className="w-9 h-9 text-[#db2777] mb-2.5" />
             <h4 className="text-base font-bold text-gray-900 uppercase tracking-wide">100% Authentic</h4>
@@ -104,7 +104,7 @@ export default function Footer() {
       </div>
 
       {/* Main Footer Links */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
         {/* Brand & Socials */}
         <div className="space-y-4">
           {settings?.logo && (
@@ -224,7 +224,7 @@ export default function Footer() {
 
       {/* Copy & Legal */}
       <div className="border-t border-pink-100/50 bg-white/20 py-5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-medium">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-medium">
           <p>
             {settings?.copyright ||
               `© ${currentYear} ${settings?.name ? settings.name.toUpperCase() : 'SHAJERGHOR'}. All rights reserved.`}

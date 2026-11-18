@@ -51,7 +51,7 @@ export default function SectionProductsPage({ title, fetchProducts }) {
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+    <main className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
       {banner ? (
         <div className="mb-6 md:mb-8 rounded-2xl overflow-hidden">
           <img src={banner} alt={title} className="w-full h-auto object-cover" />
