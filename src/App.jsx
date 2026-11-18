@@ -7,16 +7,22 @@ import CheckoutPage from "./pages/CheckoutPage";
 import BrandProductsPage from "./pages/BrandProductsPage";
 import CampaignProductsPage from "./pages/CampaignProductsPage";
 import ShowcaseProductsPage from "./pages/ShowcaseProductsPage";
+import ThankYouPage from "./pages/ThankYouPage";
+import TrackOrderPage from "./pages/TrackOrderPage";
+import DashboardPage from "./pages/DashboardPage";
 import SectionProductsPage from "./pages/SectionProductsPage";
 import {
   getAllTopRankedProducts,
   getAllRecommendedProducts,
-  getTopRankedProduct,
-  getRecommendProduct,
 } from "./services/api";
 
 
 const router = createBrowserRouter([
+  // Dashboard has its own sidebar + header, so it sits outside AppLayout (site navbar/footer)
+  {
+    path: "/dashboard",
+    element: <DashboardPage />,
+  },
   {
     path: "/", 
     element: <AppLayout />,
@@ -57,8 +63,6 @@ const router = createBrowserRouter([
           <SectionProductsPage
             title="TOP RANKING PRODUCTS"
             fetchProducts={getAllTopRankedProducts}
-            fetchBanner={getTopRankedProduct}
-            banner="/images/top-ranking-banner.jpg"
           />
         )
       },
@@ -69,7 +73,6 @@ const router = createBrowserRouter([
           <SectionProductsPage
             title="RECOMMENDED PRODUCTS"
             fetchProducts={getAllRecommendedProducts}
-            fetchBanner={getRecommendProduct}
           />
         )
       },
@@ -77,6 +80,16 @@ const router = createBrowserRouter([
       {
         path: "/checkout",
         element: <CheckoutPage />
+      },
+
+      {
+        path: "/thank-you",
+        element: <ThankYouPage />
+      },
+
+      {
+        path: "/track-order",
+        element: <TrackOrderPage />
       }
 
      

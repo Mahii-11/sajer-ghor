@@ -2,6 +2,7 @@ import React from 'react';
 import { FaBagShopping, FaCartPlus, FaStar } from 'react-icons/fa6';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { formatUnit } from '../utils/unit';
 import { addItem, hideCartPopup } from '../cart/cartSlice'; 
 
 export default function ProductCard({ product }) {
@@ -27,8 +28,12 @@ export default function ProductCard({ product }) {
     // Static / Future dynamic fields
     rating = 4.5,
     reviews_count = 124,
-    size = '50ml'
+    unit,
+    unit_type,
   } = product || {};
+
+  // Size / weight comes from the API (unit + unit_type); hidden when the product has none
+  const size = formatUnit(unit, unit_type);
 
   // Resolve prices regardless of camelCase or snake_case
   const resolvedMinPrice = min_price ?? minPrice;

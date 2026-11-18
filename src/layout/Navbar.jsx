@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaCartPlus } from 'react-icons/fa6';
 import { Search, Truck, User, Menu, X, ChevronDown } from 'lucide-react';
 import { getTotalCartQuantity, openCartPopup } from "../cart/cartSlice";
 import { useDispatch, useSelector } from 'react-redux';
 import { getNavMenu, getSiteSettings } from '../services/api';
+import UserMenu from "../components/UserMenu";
+import { PROFILE_UPDATED_EVENT } from "../utils/profileEvents";
+import AuthModal from "../components/AuthModal";
+import { logoutApi, getUserProfile } from "../services/api";
 import useTypewriterPlaceholder from '../hooks/useTypewriterPlaceholder';
 
 const SEARCH_SUGGESTIONS = [
@@ -36,6 +40,63 @@ export default function Navbar({
 }) {
   const searchPlaceholder = useTypewriterPlaceholder(SEARCH_SUGGESTIONS, !!searchQuery);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authUser, setAuthUser] = useState(() => {
+    try {
+      return localStorage.getItem("token") ? JSON.parse(localStorage.getItem("user") || "null") || {} : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Login response has no image, so pull the full profile (and refresh after profile edits)
+  useEffect(() => {
+    if (!authUser) return;
+    let cancelled = false;
+    const loadProfile = () =>
+      getUserProfile().then((res) => {
+        if (cancelled || !res?.status || !res?.user) return;
+        setAuthUser(res.user);
+        try { localStorage.setItem("user", JSON.stringify(res.user)); } catch { /* storage unavailable */ }
+      });
+    loadProfile();
+    window.addEventListener(PROFILE_UPDATED_EVENT, loadProfile);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(PROFILE_UPDATED_EVENT, loadProfile);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!authUser]);
+
+  const handleTrackClick = () => {
+    if (onTrackOrderClick) onTrackOrderClick();
+    else navigate("/track-order");
+  };
+
+  const handleLoginClick = () => {
+    if (onLoginClick) onLoginClick();
+    setAuthOpen(true);
+  };
+
+  const handleAuthSuccess = ({ token, user }) => {
+    try {
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user || {}));
+    } catch { /* storage unavailable */ }
+    setAuthUser(user || {});
+    setAuthOpen(false);
+    navigate("/dashboard");
+  };
+
+  const handleLogout = async () => {
+    try { await logoutApi(); } catch { /* clear local session regardless */ }
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    } catch { /* storage unavailable */ }
+    setAuthUser(null);
+  };
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -222,7 +283,7 @@ export default function Navbar({
           <button
             id="mobile-btn-track"
             onClick={() => {
-              onTrackOrderClick();
+              handleTrackClick();
               setMobileMenuOpen(false);
             }}
             className="w-full py-2.5 bg-black text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 mt-4"
@@ -236,6 +297,8 @@ export default function Navbar({
   );
 
   return (
+    <>
+    <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} onSuccess={handleAuthSuccess} />
     <header className="sticky top-0 z-50 w-full max-w-full overflow-x-clip bg-white/95 backdrop-blur-xl border-b border-gray-100 shadow-[0_10px_30px_-18px_rgba(219,39,119,0.35)]">
       {/* Brand accent line */}
       <div className="h-[3px] w-full bg-linear-to-r from-pink-500 via-fuchsia-500 to-rose-400" />
@@ -304,21 +367,25 @@ export default function Navbar({
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               id="btn-track-order"
-              onClick={onTrackOrderClick}
+              onClick={handleTrackClick}
               className="hidden lg:flex items-center gap-2 bg-slate-900 hover:bg-black text-white text-[13px] font-bold uppercase tracking-wide h-8 px-4 rounded-full transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer"
             >
               <Truck className="w-4 h-4" />
               Track Order
             </button>
 
-            <button
-              id="btn-login"
-              onClick={onLoginClick}
-              className="flex items-center justify-center gap-2 bg-gray-200 hover:bg-pink-50 text-gray-900 hover:text-[#db2777] text-[13px] font-bold uppercase tracking-wide h-8 px-3 sm:px-4 rounded-full transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer"
-            >
-              <User className="w-4 h-4 sm:hidden" />
-              <span className="hidden sm:inline">Login</span>
-            </button>
+            {authUser ? (
+              <UserMenu user={authUser} onLogout={handleLogout} />
+            ) : (
+              <button
+                id="btn-login"
+                onClick={handleLoginClick}
+                className="flex items-center justify-center gap-2 bg-gray-200 hover:bg-pink-50 text-gray-900 hover:text-[#db2777] text-[13px] font-bold uppercase tracking-wide h-8 px-3 sm:px-4 rounded-full transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+              >
+                <User className="w-4 h-4 sm:hidden" />
+                <span className="hidden sm:inline">Login</span>
+              </button>
+            )}
 
             <button
               id="btn-cart-nav"
@@ -436,5 +503,6 @@ export default function Navbar({
 
       {typeof document !== 'undefined' && createPortal(drawer, document.body)}
     </header>
+    </>
   );
 }

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { addItem } from '../cart/cartSlice';
+import { formatUnit } from '../utils/unit';
+import { addToWishlist, removeFromWishlist, isInWishlist } from '../cart/wishlistSlice';
 import { getProductDetailsBySlug, submitProductReview } from '../services/api';
 import ProductCard from '../components/ProductCard';
 import ProductDetailSkeleton from '../loading/ProductDetailSkeleton';
@@ -74,7 +76,7 @@ const ProductDetailsPage = () => {
   const [reviewHoverRating, setReviewHoverRating] = useState(0);
   const [reviewPhone, setReviewPhone] = useState('');
   const [reviewNote, setReviewNote] = useState('');
-  const [isLiked, setIsLiked] = useState(false);
+  const isLiked = useSelector(isInWishlist(slug));
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   // Q & A form states
@@ -314,6 +316,33 @@ const ProductDetailsPage = () => {
     dispatch(addItem(cartPayload));
   };
 
+  // Wishlist toggle (client-side only, saved in localStorage)
+  const handleToggleWishlist = () => {
+    if (isLiked) {
+      dispatch(removeFromWishlist(product.slug));
+    } else {
+      dispatch(
+        addToWishlist({
+          product_id: product.id,
+          product_slug: product.slug,
+          product_name: product.name,
+          image: selectedColor?.image || mainImage,
+          discount_price: finalPrice,
+          variation_size: selectedSize?.name || "",
+          color_name: selectedColor?.name || "",
+        })
+      );
+    }
+    Swal.fire({
+      toast: true,
+      position: "top-end",
+      icon: "success",
+      title: isLiked ? "Removed from wishlist" : "Added to wishlist",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
   const infoSections = [
     { 
       title: 'Description', 
@@ -525,6 +554,12 @@ const ProductDetailsPage = () => {
               </p>
             )}
 
+            {formatUnit(product.unit, product.unit_type) && (
+              <p className="text-lg text-gray-500 mb-3">
+                Size: <span className="font-semibold text-black">{formatUnit(product.unit, product.unit_type)}</span>
+              </p>
+            )}
+
             {/* Size Options (Conditional Render) */}
             {isVariable && availableSizes.length > 0 && (
               <div className="mb-3">
@@ -630,7 +665,7 @@ const ProductDetailsPage = () => {
             {/* Action Buttons */}
             <div className="flex items-center gap-3 mb-4">
               <button
-                onClick={() => setIsLiked(!isLiked)}
+                onClick={handleToggleWishlist}
                 className={`h-12 w-12 shrink-0 flex items-center justify-center border rounded-xl transition-all duration-300 ease-in-out active:scale-95 ${
                   isLiked
                     ? 'bg-pink-500 border-pink-500 text-white shadow-md'

@@ -488,30 +488,24 @@ export default function CheckoutPage() {
       const formData = new FormData();
       formData.append("name", form.fullName);
       formData.append("phone", form.phone);
-      formData.address = form.address;
       formData.append("address", form.address);
       formData.append("shipping_method", shippingMethod);
+      formData.append("payment_method", "cash_on_delivery");
 
-      // cartSlice এর নতুন ফিল্ড অনুযায়ী ডাটা অ্যাপেন্ড করা হচ্ছে
       cart.forEach((item, index) => {
         formData.append(`items[${index}][product_id]`, item.id);
-        // Cart uses a "size-color" key as variant_id; the API only knows size_id/color_id
-        formData.append(`items[${index}][variant_id]`, Number.isInteger(item.variant_id) ? item.variant_id || "" : "");
-        formData.append(`items[${index}][size_id]`, item.size_id || "");
-        formData.append(`items[${index}][color_id]`, item.color_id || "");
-        formData.append(`items[${index}][image]`, item.image || "");
-        formData.append(`items[${index}][price]`, item.unitPrice);
-        formData.append(`items[${index}][qty]`, item.quantity);
+        formData.append(`items[${index}][quantity]`, item.quantity);
+        if (item.size_id) formData.append(`items[${index}][size_id]`, item.size_id);
+        if (item.color_id) formData.append(`items[${index}][color_id]`, item.color_id);
       });
 
       const result = await createOrder(formData);
 
       if (result && (result.status || result.success || result.id)) {
         dispatch(clearCart());
-        setPopup({
-          type: "success",
-          message: "Order placed successfully!",
-          orderResult: result,
+        navigate("/thank-you", {
+          replace: true,
+          state: { order: result, phone: form.phone },
         });
       } else {
         setPopup({

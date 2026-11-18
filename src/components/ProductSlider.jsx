@@ -18,6 +18,8 @@ export const formatSectionProduct = (item) => ({
   maxPrice: item.max_price,
   price: item.price,
   offer_price: item.offer_price,
+  unit: item.unit,
+  unit_type: item.unit_type,
 });
 
 const getPerView = (width) => (width >= 768 ? 4 : width >= 640 ? 3 : 2);

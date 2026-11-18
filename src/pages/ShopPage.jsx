@@ -10,6 +10,7 @@ import {
   Zap,
 } from "lucide-react";
 import useTypewriterPlaceholder from "../hooks/useTypewriterPlaceholder";
+import { formatUnit } from "../utils/unit";
 
 const SEARCH_SUGGESTIONS = [
   "Search by product name...",
@@ -514,12 +515,14 @@ function ProductCard({ product }) {
             </span>
           </div>
 
-          {/* Size / Weight */}
-          <div>
-            <span className="text-[10px] sm:text-[11px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full inline-block">
-              {product?.size || "50ml"}
-            </span>
-          </div>
+          {/* Size / Weight (from API unit + unit_type) */}
+          {formatUnit(product?.unit, product?.unit_type) && (
+            <div>
+              <span className="text-[10px] sm:text-[11px] font-semibold text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full inline-block">
+                {formatUnit(product?.unit, product?.unit_type)}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}

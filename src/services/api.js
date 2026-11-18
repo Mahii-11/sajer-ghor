@@ -111,13 +111,20 @@ export const getTopRankedProduct = async () => {
   };
 };
 
-// Full list for the "Top Ranking Products" page (the banner links there)
-export const getAllTopRankedProducts = async () =>
-  normalizeResponse(await fetchData("all-top-ranked-products"), []);
+// Full list pages (the home page banners link there). Both endpoints return
+// { status, banner, data: [products], meta: { current_page, last_page, per_page, total } }
+const getPagedSection = async (endpoint, page = 1) => {
+  const res = await fetchData(`${endpoint}?page=${page}`);
+  return {
+    banner: res?.banner ?? null,
+    products: Array.isArray(res?.data) ? res.data : [],
+    pagination: res?.meta || {},
+  };
+};
 
-// Full list for the "Recommended Products" page (the banner links there)
-export const getAllRecommendedProducts = async () =>
-  normalizeResponse(await fetchData("all-recommended-products"), []);
+export const getAllTopRankedProducts = (page = 1) => getPagedSection("all-top-ranked-products", page);
+
+export const getAllRecommendedProducts = (page = 1) => getPagedSection("all-recommended-products", page);
 
 // Returns { banner, products } — the section banner image now comes from the API
 export const getRecommendProduct = async () => {
@@ -250,7 +257,7 @@ export const submitProductReview = async (slug, { name, phone, rating, review })
 
 export async function createOrder(orderData) {
   try {
-    const response = await fetch(`${BASE_URL}store-order`, {
+    const response = await fetch(`${BASE_URL}checkout`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -277,7 +284,7 @@ export const registerApi = async (data) => {
       formData.append(key, typeof data[key] === "string" ? data[key].trim() : data[key])
     );
 
-    const res = await axios.post(`${BASE_URL}register-api`, formData);
+    const res = await axios.post(`${BASE_URL}auth/register`, formData);
     return res.data;
   } catch (error) {
     console.error("REGISTER ERROR:", error.response?.data);
@@ -291,7 +298,7 @@ export const loginApi = async (email, password) => {
     formData.append("email", email.trim());
     formData.append("password", password.trim());
 
-    const response = await fetch(`${BASE_URL}store-login-api`, {
+    const response = await fetch(`${BASE_URL}auth/login`, {
       method: "POST",
       headers: { Accept: "application/json" },
       body: formData,
@@ -320,7 +327,7 @@ export const logoutApi = async () => {
 export const getUserProfile = async () => {
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${BASE_URL}get-profile-details`, {
+    const res = await fetch(`${BASE_URL}auth/get-profile-details`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -337,7 +344,7 @@ export const getUserProfile = async () => {
 
 export const updateUserProfile = async (formData) => {
   const token = localStorage.getItem("token");
-  const res = await fetch(`${BASE_URL}update-user-profile`, {
+  const res = await fetch(`${BASE_URL}auth/update-user-profile`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
@@ -354,7 +361,7 @@ export const updateUserProfile = async (formData) => {
 export const getUserOrders = async () => {
   try {
     const token = localStorage.getItem("token") || localStorage.getItem("userToken");
-    const response = await fetch(`${BASE_URL}get-all-orders`, {
+    const response = await fetch(`${BASE_URL}auth/get-all-order`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -387,4 +394,37 @@ export const getSingleOrder = async (id) => {
     console.error("Error fetching single order:", error.response?.data || error);
     return { success: false };
   }
+};
+// Track an order by order_id + phone (public, no token needed)
+// Response: { status, data: [{ order_id, order_date, order_status, order_status_text, ... }] }
+export const trackOrderApi = async (orderId, phone) => {
+  const formData = new FormData();
+  formData.append("order_id", String(orderId).trim());
+  formData.append("phone", String(phone).trim());
+
+  const response = await fetch(`${BASE_URL}track-order`, {
+    method: "POST",
+    headers: { Accept: "application/json" },
+    body: formData,
+  });
+  return await response.json().catch(() => null);
+};
+
+// Password change uses the same update-user-profile endpoint (password + password_confirmation).
+// The current name/email/phone/address are re-sent so the backend's profile validation still passes.
+export const changePasswordApi = async (password, passwordConfirmation) => {
+  const formData = new FormData();
+
+  const profile = await getUserProfile();
+  const u = profile?.user;
+  if (u) {
+    ["name", "email", "phone", "address"].forEach((key) => {
+      if (u[key]) formData.append(key, u[key]);
+    });
+  }
+
+  formData.append("password", password);
+  formData.append("password_confirmation", passwordConfirmation);
+
+  return await updateUserProfile(formData);
 };
