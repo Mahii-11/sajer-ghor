@@ -26,6 +26,10 @@ import {
   clearCart,
 } from "../cart/cartSlice"; 
 import { createOrder } from "../services/api"; // আপনার API ফাইলের সঠিক পাথ দিন
+import { getAddresses } from "../services/addresses";
+
+const fullAddressText = (a) =>
+  [a.address, a.zone, a.district].filter(Boolean).join(", ");
 
 /* ------------------------------------------------------------------ */
 /* Data                                                               */
@@ -168,9 +172,66 @@ function StepIndicator({ currentStep }) {
 /* Contact & delivery details                                         */
 /* ------------------------------------------------------------------ */
 
-function ContactDetailsCard({ form, setForm, errors }) {
+function SavedAddressPicker({ addresses, selectedId, onSelect }) {
+  return (
+    <div className="mb-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {addresses.map((a) => {
+          const active = selectedId === a.id;
+          return (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => onSelect(a.id)}
+              className={`relative rounded-xl border-2 p-3.5 pr-11 text-left transition ${
+                active
+                  ? "border-[#E61C5C] bg-pink-50/60"
+                  : "border-gray-200 bg-white hover:border-pink-200"
+              }`}
+            >
+              <p className="text-[14px] font-semibold text-gray-900">
+                {a.name}{" "}
+                <span className="font-normal text-gray-500">({a.phone})</span>
+                {a.isDefault && (
+                  <span className="ml-1.5 rounded-full bg-[#E61C5C] px-1.5 py-0.5 align-middle text-[9px] font-semibold uppercase text-white">
+                    Default
+                  </span>
+                )}
+              </p>
+              <p className="mt-1 text-[12.5px] leading-snug text-gray-500">
+                {fullAddressText(a)}
+              </p>
+              <span
+                className={`absolute right-3.5 top-3.5 flex h-5 w-5 items-center justify-center rounded-full border ${
+                  active ? "border-[#E61C5C] bg-[#E61C5C] text-white" : "border-gray-300"
+                }`}
+              >
+                {active && <Check size={12} />}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => onSelect(null)}
+        className={`mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold ${
+          selectedId === null ? "text-gray-400" : "text-[#E61C5C] hover:underline"
+        }`}
+      >
+        <Plus size={14} /> Use a different address
+      </button>
+    </div>
+  );
+}
+
+function ContactDetailsCard({ form, setForm, errors, addresses, selectedId, onSelect }) {
   const update = (field) => (e) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const hasSaved = addresses.length > 0;
+  const showForm = !hasSaved || selectedId === null;
 
   return (
     <div className="rounded-2xl bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-100">
@@ -183,6 +244,11 @@ function ContactDetailsCard({ form, setForm, errors }) {
         </h2>
       </div>
 
+      {hasSaved && (
+        <SavedAddressPicker addresses={addresses} selectedId={selectedId} onSelect={onSelect} />
+      )}
+
+      {showForm && (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-[13px] font-semibold text-gray-800">
@@ -231,6 +297,7 @@ function ContactDetailsCard({ form, setForm, errors }) {
           {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}
         </div>
       </div>
+      )}
     </div>
   );
 }
@@ -454,6 +521,21 @@ export default function CheckoutPage() {
     address: "",
    
   });
+  // Logged-in users: saved addresses from the address book (null id = manual entry)
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const selectedAddress =
+    savedAddresses.find((a) => a.id === selectedAddressId) || null;
+
+  useEffect(() => {
+    if (!localStorage.getItem("token") && !localStorage.getItem("userToken")) return;
+    getAddresses().then((list) => {
+      setSavedAddresses(list);
+      const preferred = list.find((a) => a.isDefault) || list[0];
+      if (preferred) setSelectedAddressId(preferred.id);
+    });
+  }, []);
+
   const [shippingMethod, setShippingMethod] = useState("21");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -470,6 +552,7 @@ export default function CheckoutPage() {
   // Form Validation
   const validateForm = () => {
     const newErrors = {};
+    if (selectedAddress) return true;
     if (!form.fullName.trim()) newErrors.fullName = "Full name is required";
     if (!form.phone.trim()) newErrors.phone = "Phone number is required";
     if (!form.address.trim()) newErrors.address = "Address is required";
@@ -486,9 +569,12 @@ export default function CheckoutPage() {
 
     try {
       const formData = new FormData();
-      formData.append("name", form.fullName);
-      formData.append("phone", form.phone);
-      formData.append("address", form.address);
+      const orderName = selectedAddress ? selectedAddress.name : form.fullName;
+      const orderPhone = selectedAddress ? selectedAddress.phone : form.phone;
+      const orderAddress = selectedAddress ? fullAddressText(selectedAddress) : form.address;
+      formData.append("name", orderName);
+      formData.append("phone", orderPhone);
+      formData.append("address", orderAddress);
       formData.append("shipping_method", shippingMethod);
       formData.append("payment_method", "cash_on_delivery");
 
@@ -505,7 +591,7 @@ export default function CheckoutPage() {
         dispatch(clearCart());
         navigate("/thank-you", {
           replace: true,
-          state: { order: result, phone: form.phone },
+          state: { order: result, phone: orderPhone },
         });
       } else {
         setPopup({
@@ -570,7 +656,14 @@ export default function CheckoutPage() {
 
         <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
           <div className="flex flex-col gap-4 sm:gap-6 lg:col-span-2">
-            <ContactDetailsCard form={form} setForm={setForm} errors={errors} />
+            <ContactDetailsCard
+              form={form}
+              setForm={setForm}
+              errors={errors}
+              addresses={savedAddresses}
+              selectedId={selectedAddressId}
+              onSelect={setSelectedAddressId}
+            />
             <ShippingMethodCard
               selected={shippingMethod}
               onSelect={setShippingMethod}

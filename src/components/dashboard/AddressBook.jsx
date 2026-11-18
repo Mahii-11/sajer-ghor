@@ -111,7 +111,11 @@ export default function AddressBook({ user }) {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this address?")) return;
-    setAddresses(await deleteAddress(id));
+    try {
+      setAddresses(await deleteAddress(id));
+    } catch (err) {
+      window.alert(err.message || "Failed to delete address.");
+    }
   };
 
   const inputClass =

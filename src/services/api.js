@@ -228,6 +228,18 @@ export const getProductDetailsBySlug = async (slug) => {
   }
 };
 
+/* ================= LOCATIONS ================= */
+
+const pickList = (res) =>
+  Array.isArray(res?.data) ? res.data : Array.isArray(res?.districts) ? res.districts : Array.isArray(res) ? res : [];
+
+// GET locations/districts -> [{ id, name }]
+export const getDistricts = async () => pickList(await fetchData("locations/districts"));
+
+// GET locations/districts/{id}/zones -> { district: {id, name}, data: [{ id, name }] }
+export const getZonesByDistrict = async (districtId) =>
+  pickList(await fetchData(`locations/districts/${districtId}/zones`));
+
 /* ================= POST & AUTH REQUESTS ================= */
 
 // Submit a customer review (goes live after admin approval)

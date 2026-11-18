@@ -11,11 +11,11 @@ import TrackOrder from "../components/dashboard/TrackOrder";
 import PasswordSettings from "../components/dashboard/PasswordSettings";
 import Wishlist from "../components/dashboard/Wishlist";
 import AccountSettings from "../components/dashboard/AccountSettings";
+import AddressBook from "../components/dashboard/AddressBook";
 
-// Tabs listed in the Sidebar whose APIs are not ready yet (address).
+// Tabs listed in the Sidebar whose APIs are not ready yet.
 // Import their components and add them to the switch below once the endpoints are available.
 const PENDING_TABS = {
-  address: "Address Book",
   points: "Reward Points",
 };
 
@@ -65,6 +65,8 @@ export default function DashboardPage() {
         return <Wishlist />;
       case "password":
         return <PasswordSettings />;
+      case "address":
+        return <AddressBook user={user || {}} />;
       case "profile":
         return <AccountSettings user={user || {}} setUser={setUser} />;
       case "dashboard":
