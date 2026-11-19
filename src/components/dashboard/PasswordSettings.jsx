@@ -3,6 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { changePasswordApi } from "../../services/api";
 
 export default function PasswordSettings() {
+  const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [show, setShow] = useState(false);
@@ -13,6 +14,10 @@ export default function PasswordSettings() {
     e.preventDefault();
     setMessage(null);
 
+    if (!oldPassword) {
+      setMessage({ type: "error", text: "Please enter your current password." });
+      return;
+    }
     if (password.length < 6) {
       setMessage({ type: "error", text: "Password must be at least 6 characters." });
       return;
@@ -23,11 +28,12 @@ export default function PasswordSettings() {
     }
 
     setLoading(true);
-    const res = await changePasswordApi(password, confirm);
+    const res = await changePasswordApi(oldPassword, password, confirm);
     setLoading(false);
 
     if (res?.status) {
       setMessage({ type: "success", text: res.message || "Password updated successfully." });
+      setOldPassword("");
       setPassword("");
       setConfirm("");
     } else {
@@ -55,6 +61,18 @@ export default function PasswordSettings() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className={labelClass}>Old Password</label>
+          <input
+            type={show ? "text" : "password"}
+            value={oldPassword}
+            onChange={(e) => setOldPassword(e.target.value)}
+            placeholder="Enter your old password"
+            autoComplete="current-password"
+            className={inputClass}
+          />
+        </div>
+
         <div>
           <label className={labelClass}>New Password</label>
           <div className="relative">

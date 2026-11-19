@@ -437,7 +437,7 @@ export const trackOrderApi = async (orderId, phone) => {
 
 // Password change uses the same update-user-profile endpoint (password + password_confirmation).
 // The current name/email/phone/address are re-sent so the backend's profile validation still passes.
-export const changePasswordApi = async (password, passwordConfirmation) => {
+export const changePasswordApi = async (oldPassword, password, passwordConfirmation) => {
   const profile = await getUserProfile();
   const u = profile?.user;
 
@@ -448,6 +448,7 @@ export const changePasswordApi = async (password, passwordConfirmation) => {
         if (u[key]) formData.append(key, u[key]);
       });
     }
+    formData.append("old_password", oldPassword);
     formData.append("password", password);
     formData.append("password_confirmation", passwordConfirmation);
     return formData;
