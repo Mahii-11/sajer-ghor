@@ -1,4 +1,4 @@
-import { LayoutDashboard, ShoppingBag, Heart, Settings, LifeBuoy, LogOut, Home, Package, X, MapPin, Lock, /* Sparkles, */ Truck } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Heart, Settings, LifeBuoy, LogOut, Home, Package, X, MapPin, Lock/* , Sparkles */ } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { logoutApi } from "../../services/api";
 
@@ -66,11 +66,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, activeTab, setAct
             Orders
           </div>
           
-          <div onClick={() => setActiveTab('track')} className={navItemClass('track')} data-testid="tab-track">
-            <Truck className="w-5 h-5" />
-            Track Order
-          </div>
-
           <div onClick={() => setActiveTab('wishlist')} className={navItemClass('wishlist')} data-testid="tab-wishlist">
             <Heart className="w-5 h-5" />
             Wishlist

@@ -114,7 +114,7 @@ export default function ProductCard({ product }) {
     <div 
       id={`product-card-${id}`}
       onClick={() => navigate(`/product-details/${slug}`)}
-      className="relative bg-white border border-gray-200 rounded-2xl sm:rounded-[22px] overflow-hidden flex flex-col justify-between w-full h-full shadow-[0_4px_16px_rgba(230,28,92,0.10)] hover:shadow-[0_8px_24px_rgba(230,28,92,0.18)] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+      className="relative bg-white border border-gray-200 rounded-2xl sm:rounded-[22px] overflow-hidden flex flex-col justify-between w-full h-full shadow-[0_4px_16px_rgba(230,28,92,0.10)] hover:shadow-[0_5px_16px_rgba(230,28,92,0.12)] active:scale-[0.98] transition-all duration-200 cursor-pointer"
     >
       {/* Discount Badge on Top Left */}
       {discountPercent && (

@@ -185,11 +185,11 @@ export default function TopBrands() {
     <section>
       <div>
         {/* Section Heading */}
-        <SectionTitle title="TOP BRANDS" />
-        <div className="flex justify-end px-5 -mt-4 mb-4">
+        <div className="relative mb-6 px-5">
+          <SectionTitle title="TOP BRANDS" className="mb-0" />
           <Link
             to="/brands"
-            className="group inline-flex items-center gap-1.5 text-sm font-semibold text-[#db2777] hover:text-black transition-colors"
+            className="group absolute right-5 top-1/2 -translate-y-1/2 inline-flex items-center gap-1.5 text-sm font-semibold leading-none text-[#db2777] hover:text-black transition-colors"
           >
             View All
             <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -224,7 +224,7 @@ export default function TopBrands() {
                       href={brand.slug ? `/brand/${brand.slug}` : '#'}
                       draggable={false}
                       onClickCapture={blockClickAfterDrag}
-                      className="group block shrink-0 w-[calc((100%-12px)/2)] sm:w-[calc((100%-48px)/4)] lg:w-[calc((100%-64px)/5)] xl:w-[calc((100%-80px)/6)] 2xl:w-[calc((100%-96px)/7)] overflow-hidden rounded-2xl bg-white ring-1 ring-pink-100 shadow-[0_4px_14px_rgba(230,28,92,0.10)] hover:shadow-[0_8px_22px_rgba(230,28,92,0.20)] active:scale-95 transition-all duration-200"
+                      className="group block shrink-0 w-[calc((100%-12px)/2)] sm:w-[calc((100%-48px)/4)] lg:w-[calc((100%-64px)/5)] xl:w-[calc((100%-80px)/6)] 2xl:w-[calc((100%-96px)/7)] overflow-hidden rounded-2xl bg-white ring-1 ring-pink-100 shadow-[0_4px_14px_rgba(230,28,92,0.10)] hover:shadow-[0_5px_16px_rgba(230,28,92,0.12)] active:scale-95 transition-all duration-200"
                     >
                       <div className="overflow-hidden bg-[#F3F4F6]">
                         <img

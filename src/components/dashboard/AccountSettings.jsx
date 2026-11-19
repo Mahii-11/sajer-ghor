@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Mail, Phone, MapPin, Edit2, Save } from "lucide-react";
+import { Mail, Phone, MapPin, Edit2, Save, CalendarDays } from "lucide-react";
 import Swal from "sweetalert2";
 import { updateUserProfile, getUserProfile } from "../../services/api";
 
@@ -193,15 +193,19 @@ export default function AccountSettings({ user, setUser }) {
 
       {/* Profile Card */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mt-6">
-        <div className="h-32 bg-gradient-to-r from-[#db2777] to-[#f43f5e]" />
+        <div className="relative h-32 sm:h-36 bg-gradient-to-r from-[#db2777] via-[#e8386a] to-[#f43f5e] overflow-hidden">
+          <div className="absolute -right-10 -top-16 w-56 h-56 rounded-full bg-white/10" />
+          <div className="absolute right-32 -bottom-20 w-48 h-48 rounded-full border-[22px] border-white/10" />
+          <div className="absolute -left-8 -bottom-12 w-32 h-32 rounded-full bg-white/10" />
+        </div>
 
-        <div className="px-6 pb-6 pt-0">
-          <div className="flex flex-col sm:flex-row sm:items-end gap-6 -mt-12 relative z-10">
-            <div className="flex flex-col items-start">
+        <div className="px-6 sm:px-8 pb-7 pt-0">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 -mt-14 relative z-10">
+            <div className="flex flex-col items-start shrink-0">
               <img
                 src={resolveImageUrl(profileImage)}
                 alt="Profile"
-                className="w-28 h-28 rounded-2xl border-4 border-white shadow-lg object-cover bg-white"
+                className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl border-4 border-white shadow-lg ring-1 ring-slate-100 object-cover bg-white"
               />
 
               {isEditingProfile && (
@@ -217,16 +221,19 @@ export default function AccountSettings({ user, setUser }) {
               )}
             </div>
 
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-slate-900">
+            <div className="flex-1 min-w-0 sm:pt-[4.25rem]">
+              <h2 className="text-2xl font-bold text-slate-900 leading-tight truncate">
                 {formData.name || "User"}
               </h2>
-              <p className="text-slate-500 text-sm mt-1">
-                {formData.status || "Customer"}
-              </p>
-              <p className="text-slate-400 text-xs mt-2">
-                Member since {formData.joined || "N/A"}
-              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+                <span className="inline-flex items-center rounded-full bg-pink-50 px-3 py-1 text-xs font-semibold text-[#db2777] ring-1 ring-pink-100">
+                  {formData.status || "Customer"}
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
+                  <CalendarDays className="w-3.5 h-3.5 text-slate-400" />
+                  Member since {formData.joined || "N/A"}
+                </span>
+              </div>
             </div>
           </div>
         </div>

@@ -349,7 +349,7 @@ export default function Navbar({
 
           {/* Search */}
           <div className="hidden md:block flex-1">
-            <div className="relative w-full max-w-[490px] mx-auto">
+            <div className="relative w-full max-w-[560px] lg:max-w-[680px] xl:max-w-[780px] mx-auto">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-700 pointer-events-none" />
               <input
                 id="header-search-input"
