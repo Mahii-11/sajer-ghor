@@ -12,6 +12,7 @@ import ThankYouPage from "./pages/ThankYouPage";
 import TrackOrderPage from "./pages/TrackOrderPage";
 import DashboardPage from "./pages/DashboardPage";
 import SectionProductsPage from "./pages/SectionProductsPage";
+import OrderDetails from "./components/dashboard/OrderDetails";
 import {
   getAllTopRankedProducts,
   getAllRecommendedProducts,
@@ -23,6 +24,15 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <DashboardPage />,
+  },
+  // Single order view also lives inside the dashboard shell (sidebar + header)
+  {
+    path: "/order-details/:id",
+    element: (
+      <DashboardPage highlightTab="orders">
+        <OrderDetails />
+      </DashboardPage>
+    ),
   },
   {
     path: "/", 
@@ -98,7 +108,6 @@ const router = createBrowserRouter([
         element: <TrackOrderPage />
       }
 
-     
     ],
   },
 ]);

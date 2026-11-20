@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { getUserProfile } from "../services/api";
 import { PROFILE_UPDATED_EVENT } from "../utils/profileEvents";
 import DashboardSkeleton from "../components/dashboard/DashboardSkeleton";
@@ -27,16 +27,19 @@ const hasToken = () => {
   }
 };
 
-export default function DashboardPage() {
-  const [params, setParams] = useSearchParams();
+// `children` lets other routes (e.g. /order-details/:id) render inside the dashboard
+// shell. `highlightTab` keeps the matching sidebar item active for those pages.
+export default function DashboardPage({ children, highlightTab }) {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const loggedIn = hasToken();
 
-  const activeTab = params.get("tab") || "dashboard";
+  const activeTab = highlightTab || params.get("tab") || "dashboard";
   const setActiveTab = (tab) => {
-    setParams({ tab });
+    navigate(`/dashboard?tab=${tab}`);
     setSidebarOpen(false);
   };
 
@@ -99,7 +102,7 @@ export default function DashboardPage() {
         <Header setSidebarOpen={setSidebarOpen} setActiveTab={setActiveTab} user={user} loading={loading} />
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          {loading ? <DashboardSkeleton /> : renderTab()}
+          {loading ? <DashboardSkeleton /> : children || renderTab()}
         </main>
       </div>
       </div>

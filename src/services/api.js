@@ -407,13 +407,14 @@ export const getOrderProductName = (order) => {
 export const getSingleOrder =async (id) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await axios.get(`${BASE_URL}order-details/${id}`, {
+    const response = await axios.get(`${BASE_URL}auth/get-single-order/${id}`, {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
 
+    // Response: { status, message, order: {...} }
     return response.data;
   } catch (error) {
     console.error("Error fetching single order:", error.response?.data || error);

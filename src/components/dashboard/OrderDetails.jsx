@@ -1,6 +1,6 @@
 // OrderDetails.jsx
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -31,8 +31,9 @@ export default function OrderDetails() {
       setLoading(true);
       const res = await getSingleOrder(id);
 
-      if (res?.success) {
-        setOrder(res.data);
+      const found = res?.order || res?.data;
+      if ((res?.status === true || res?.success) && found) {
+        setOrder(found);
       } else {
         setOrder(null);
       }
@@ -46,19 +47,41 @@ export default function OrderDetails() {
 
   const currency = (amount) => `৳${Number(amount || 0).toLocaleString()}`;
 
-  const subtotal = useMemo(() => {
-    if (!order?.order_products) return 0;
+  // Shape of GET auth/get-single-order/:id -> order:
+  // { summary:{product_qty,subtotal,shipping_cost,coupon_discount,special_discount,advance_amount,total_amount},
+  //   shipping_address:{name,email,phone,address,city,state,country}, billing_address:{...},
+  //   products:[{name,image,size,color,unit,unit_type,qty,unit_price,total_price}] }
+  const orderItems = order?.products || [];
+  const summary = order?.summary || {};
 
-    return order.order_products.reduce((sum, item) => {
-      return sum + Number(item.unit_price) * Number(item.qty);
-    }, 0);
-  }, [order]);
+  // size / color may be null, a string, or an object with a name
+  const label = (v) => {
+    if (!v) return null;
+    if (typeof v === "object") return v.name || null;
+    return v === "null" ? null : String(v);
+  };
 
-  const shipping = Number(order?.shipping_cost || 0);
-  const discount = Number(order?.discount_amount || 0);
-  const advance = Number(order?.advance_amount || 0);
+  const addr = order?.shipping_address || {};
+  const shipName = addr.name;
+  const shipPhone = addr.phone;
+  const shipAddress = [addr.address, addr.city, addr.state, addr.country]
+    .filter(Boolean)
+    .join(", ");
 
-  const grandTotal = subtotal - discount - advance + shipping;
+  const itemPrice = (i) => Number(i.unit_price || 0);
+  const itemQty = (i) => Number(i.qty || 0);
+  const itemTotal = (i) => Number(i.total_price ?? itemPrice(i) * itemQty(i));
+
+  const subtotal = Number(
+    summary.subtotal ?? orderItems.reduce((sum, i) => sum + itemTotal(i), 0)
+  );
+  const shipping = Number(summary.shipping_cost || 0);
+  const discount =
+    Number(summary.coupon_discount || 0) + Number(summary.special_discount || 0);
+  const advance = Number(summary.advance_amount || 0);
+  const grandTotal = Number(
+    summary.total_amount ?? subtotal - discount - advance + shipping
+  );
 
   const formatDate = (date) => {
     if (!date) return "N/A";
@@ -76,8 +99,8 @@ export default function OrderDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 px-4 py-20">
-        <div className="max-w-7xl mx-auto animate-pulse space-y-5">
+      <div className="w-full">
+        <div className="animate-pulse space-y-5">
           <div className="h-12 bg-white rounded-2xl"></div>
           <div className="grid md:grid-cols-2 gap-5">
             <div className="h-52 bg-white rounded-2xl"></div>
@@ -91,7 +114,7 @@ export default function OrderDetails() {
 
   if (!order) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 ">
+      <div className="flex items-center justify-center py-10">
         <div className="bg-white shadow rounded-2xl p-10 text-center">
           <h2 className="text-2xl font-bold text-slate-800">
             Order Not Found
@@ -112,8 +135,8 @@ export default function OrderDetails() {
   }
 
   return (
-    <section className="min-h-screen bg-slate-50 py-5 md:py-20 px-4">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <section className="w-full">
+      <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -159,9 +182,7 @@ export default function OrderDetails() {
                 <div>
                   <p className="text-slate-500">Name</p>
                   <p className="font-semibold text-slate-800">
-                    {order?.order_address?.shipping_name ||
-                      order?.user?.name ||
-                      "N/A"}
+                    {shipName || "N/A"}
                   </p>
                 </div>
               </div>
@@ -171,9 +192,7 @@ export default function OrderDetails() {
                 <div>
                   <p className="text-slate-500">Phone</p>
                   <p className="font-semibold text-slate-800">
-                    {order?.order_address?.shipping_phone ||
-                      order?.user?.phone ||
-                      "N/A"}
+                    {shipPhone || "N/A"}
                   </p>
                 </div>
               </div>
@@ -183,7 +202,7 @@ export default function OrderDetails() {
                 <div>
                   <p className="text-slate-500">Address</p>
                   <p className="font-semibold text-slate-800">
-                    {order?.order_address?.shipping_address || "N/A"}
+                    {shipAddress || "N/A"}
                   </p>
                 </div>
               </div>
@@ -203,7 +222,7 @@ export default function OrderDetails() {
               <div>
                 <p className="text-slate-500">Date</p>
                 <p className="font-semibold text-slate-800">
-                  {formatDate(order.created_at)}
+                  {formatDate(order.order_date)}
                 </p>
               </div>
 
@@ -217,30 +236,33 @@ export default function OrderDetails() {
               <div>
                 <p className="text-slate-500">Shipping Method</p>
                 <p className="font-semibold text-slate-800">
-                  {order.shipping_method || "N/A"}
+                  {(typeof order.shipping_method === "object"
+                    ? order.shipping_method?.name
+                    : order.shipping_method) || "N/A"}
                 </p>
               </div>
 
               <div>
                 <p className="text-slate-500">Payment</p>
                 <p className="font-semibold text-slate-800">
-                  {order.payment_method == 1
+                  {order.payment_method === "cash_on_delivery"
                     ? "Cash On Delivery"
-                    : "Online Payment"}
+                    : order.payment_method || "Online Payment"}
                 </p>
               </div>
 
               <div>
                 <p className="text-slate-500">Status</p>
                 <p className="font-semibold text-slate-800">
-                  {order.order_status == 0 ? "Pending" : "Completed"}
+                  {order.order_status_text || "Pending"}
                 </p>
               </div>
 
               <div>
                 <p className="text-slate-500">Items</p>
                 <p className="font-semibold text-slate-800">
-                  {order.product_qty}
+                  {summary.product_qty ??
+                    orderItems.reduce((s, i) => s + itemQty(i), 0)}
                 </p>
               </div>
             </div>
@@ -263,8 +285,8 @@ export default function OrderDetails() {
               <thead>
                 <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
                   <th className="px-6 py-4">Product</th>
-                  <th className="px-6 py-4">Variant</th>
-                  <th className="px-6 py-4">Color / Size</th>
+                  <th className="px-6 py-4">Size</th>
+                  <th className="px-6 py-4">Color</th>
                   <th className="px-6 py-4">Unit Price</th>
                   <th className="px-6 py-4">Qty</th>
                   <th className="px-6 py-4 text-right">Total</th>
@@ -272,39 +294,48 @@ export default function OrderDetails() {
               </thead>
 
               <tbody>
-                {order?.order_products?.map((item) => {
-                  const total =
-                    Number(item.unit_price) * Number(item.qty);
+                {orderItems.map((item, idx) => {
+                  const total = itemTotal(item);
 
                   return (
                     <tr
-                      key={item.id}
+                      key={`${item.product_id}-${idx}`}
                       className="border-t border-slate-100 hover:bg-slate-50/50"
                     >
                       <td className="px-6 py-5 font-medium text-slate-800">
-                        {item.product_name}
+                        <div className="flex items-center gap-3">
+                          {item.image && (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-12 h-12 rounded-lg object-cover border border-slate-100"
+                            />
+                          )}
+                          <div>
+                            <p>{item.name || "N/A"}</p>
+                            {item.unit && (
+                              <p className="text-xs text-slate-500">
+                                {item.unit} {item.unit_type}
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       </td>
 
                       <td className="px-6 py-5 text-slate-600">
-                        {item.variation &&
-                        item.variation !== "null"
-                          ? item.variation
-                          : "N/A"}
+                        {label(item.size) || "N/A"}
                       </td>
 
                       <td className="px-6 py-5 text-slate-600">
-                        {item.variation_color_id &&
-                        item.variation_color_id !== "null"
-                          ? item.variation_color_id
-                          : "N/A"}
+                        {label(item.color) || "N/A"}
                       </td>
 
                       <td className="px-6 py-5 text-slate-700">
-                        {currency(item.unit_price)}
+                        {currency(itemPrice(item))}
                       </td>
 
                       <td className="px-6 py-5 text-slate-700">
-                        {item.qty}
+                        {itemQty(item)}
                       </td>
 
                       <td className="px-6 py-5 text-right font-semibold text-slate-800">
