@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Search, Package, Truck, CheckCircle2, Clock, XCircle, PauseCircle, Undo2 } from "lucide-react";
 import { trackOrderApi } from "../../services/api";
+import { resolveImageUrl } from "../../utils/imageUrl";
 
 // Normal delivery flow (order_status: 0 → 1 → 2 → 3)
 const STEPS = [
@@ -21,6 +22,12 @@ export const formatDate = (d) =>
   d
     ? new Date(d).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" })
     : "N/A";
+
+const money = (n) => Number(n || 0).toLocaleString("en-US");
+
+// "cash_on_delivery" -> "Cash On Delivery"
+const humanize = (s) =>
+  s ? String(s).replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "N/A";
 
 export function Stepper({ status }) {
   const special = SPECIAL[status];
@@ -84,7 +91,8 @@ export default function TrackOrder({ accent, initialOrderId = "", initialPhone =
   const [error, setError] = useState("");
 
   const runTrack = async (rawId, rawPhone) => {
-    const id = String(rawId).trim().replace(/^#?ORD-/i, "");
+    // Order IDs look like "SGO-201114"; only strip an optional leading "#"
+    const id = String(rawId).trim().replace(/^#/, "");
     if (!id || !String(rawPhone).trim()) {
       setError("Please enter both order ID and phone number.");
       return;
@@ -93,8 +101,10 @@ export default function TrackOrder({ accent, initialOrderId = "", initialPhone =
     setLoading(true);
     try {
       const res = await trackOrderApi(id, rawPhone);
-      const list = res?.data;
-      setOrders(res?.status && Array.isArray(list) ? list : []);
+      // `data` is a single order object (older responses used an array)
+      const data = res?.data;
+      const list = Array.isArray(data) ? data : data && typeof data === "object" ? [data] : [];
+      setOrders(res?.status ? list : []);
       if (!res?.status) setError(res?.message || "");
     } catch (err) {
       console.error("Track order failed:", err);
@@ -163,18 +173,74 @@ export default function TrackOrder({ accent, initialOrderId = "", initialPhone =
             <div key={o.order_id} className="border border-slate-200 rounded-xl p-5">
               <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
                 <div>
-                  <p className="font-bold text-slate-900">#ORD-{o.order_id}</p>
+                  <p className="font-bold text-slate-900">#{o.order_id}</p>
                   <p className="text-sm text-slate-500 mt-0.5">
-                    {o.customer_name} · {o.shipping_method}
+                    {[o.customer_name, o.shipping_method].filter(Boolean).join(" · ")}
+                  </p>
+                  <p className="text-sm text-slate-500 mt-0.5">
+                    {humanize(o.payment_method)} · {Number(o.payment_status) === 1 ? "Paid" : "Unpaid"}
                   </p>
                 </div>
                 <div className="text-right text-sm">
-                  <p className="text-slate-500">Placed on {formatDate(o.order_date)}</p>
-                  <p className="font-semibold text-slate-900 mt-0.5">{o.order_status_text}</p>
+                  <p className="text-slate-500">Placed on {formatDate(o.placed_at || o.order_date)}</p>
+                  <p className="font-semibold text-slate-900 mt-0.5">
+                    {o.order_status_text || SPECIAL[Number(o.order_status)]?.label || STEPS[Number(o.order_status)]?.label}
+                  </p>
                 </div>
               </div>
 
               <Stepper status={Number(o.order_status)} />
+
+              {o.courier && (o.courier.name || o.courier.tracking_id || o.courier.status) && (
+                <div className="mt-6 rounded-lg bg-slate-50 border border-slate-100 px-4 py-3 text-sm text-slate-700 space-y-0.5">
+                  {o.courier.name && <p>Courier: <span className="font-semibold">{o.courier.name}</span></p>}
+                  {o.courier.tracking_id && <p>Tracking ID: <span className="font-semibold">{o.courier.tracking_id}</span></p>}
+                  {o.courier.status && <p>Status: <span className="font-semibold">{humanize(o.courier.status)}</span></p>}
+                </div>
+              )}
+
+              {Array.isArray(o.items) && o.items.length > 0 && (
+                <div className="mt-6 border-t border-slate-100 pt-4">
+                  <ul className="divide-y divide-slate-100">
+                    {o.items.map((it, i) => (
+                      <li key={i} className="flex items-center gap-3 py-3">
+                        <img
+                          src={resolveImageUrl(it.image)}
+                          alt={it.name}
+                          className="w-14 h-14 rounded-lg object-cover bg-slate-100 shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-slate-900 truncate">{it.name}</p>
+                          {it.variation && <p className="text-xs text-slate-500">{it.variation}</p>}
+                          <p className="text-xs text-slate-500">
+                            {it.quantity} × ৳{money(it.unit_price)}
+                          </p>
+                        </div>
+                        <p className="text-sm font-semibold text-slate-900">
+                          ৳{money(Number(it.quantity) * Number(it.unit_price))}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <dl className="mt-3 pt-3 border-t border-slate-100 text-sm space-y-1">
+                    <div className="flex justify-between text-slate-600">
+                      <dt>Shipping ({o.shipping_method})</dt>
+                      <dd>৳{money(o.shipping_cost)}</dd>
+                    </div>
+                    {Number(o.discount) > 0 && (
+                      <div className="flex justify-between text-slate-600">
+                        <dt>Discount</dt>
+                        <dd>-৳{money(o.discount)}</dd>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-bold text-slate-900 text-base">
+                      <dt>Total</dt>
+                      <dd>৳{money(o.total_amount)}</dd>
+                    </div>
+                  </dl>
+                </div>
+              )}
             </div>
           ))}
         </div>

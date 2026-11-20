@@ -3,11 +3,15 @@ import { CheckCircle2, Truck, ShoppingBag, PhoneCall } from "lucide-react";
 
 // Only the customer-facing `order_id` works with track-order (not the database `id`),
 // so search the whole response for it instead of guessing one fixed path.
+// Customer-facing IDs look like "SGO-202380".
+const ORDER_ID_RE = /^SGO-\d+$/i;
+
 const findOrderId = (value, depth = 0) => {
-  if (!value || typeof value !== "object" || depth > 4) return null;
-  if (value.order_id !== undefined && value.order_id !== null && value.order_id !== "") {
-    return value.order_id;
-  }
+  if (depth > 5 || value === null || value === undefined) return null;
+  if (typeof value === "string") return ORDER_ID_RE.test(value.trim()) ? value.trim() : null;
+  if (typeof value !== "object") return null;
+  // Prefer an explicit order_id key, then fall back to any SGO-xxxx value anywhere in the response
+  if (typeof value.order_id === "string" && value.order_id.trim()) return value.order_id.trim();
   for (const child of Object.values(value)) {
     const found = findOrderId(child, depth + 1);
     if (found !== null) return found;
@@ -22,6 +26,7 @@ export default function ThankYouPage() {
   if (!state?.order) return <Navigate to="/" replace />;
 
   const orderId = findOrderId(state.order);
+  if (!orderId) console.warn("Thank-you: no order ID found in checkout response:", state.order);
   const phone = state.phone || "";
   const trackUrl = orderId
     ? `/track-order?${new URLSearchParams({ order_id: orderId, phone }).toString()}`
